@@ -45,6 +45,9 @@ func main() {
 		pgxPool,
 	))
 
+	// Register Swagger documentation endpoints
+	scheduler.RegisterSwaggerHandlers(r)
+
 	log.Info("Starting server on :8000")
 
 	if err := r.Run(":8000"); err != nil {
