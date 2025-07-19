@@ -10,13 +10,10 @@ import (
 )
 
 func main() {
-	// Create Gin router
 	r := gin.Default()
 
-	// Create server implementation
 	server := scheduler.NewService(zap.NewExample())
 
-	// Register routes
 	scheduler.RegisterHandlers(r, server)
 
 	log.Println("Starting server on :8000")

@@ -85,7 +85,7 @@ components:
         available_time_intervals:
           type: array
           items:
-            $ref: '#/components/schemas/TimeInterval'
+            $ref: "#/components/schemas/TimeInterval"
 
     AvailabilityChanges:
       type: object
@@ -93,11 +93,11 @@ components:
         add:
           type: array
           items:
-            $ref: '#/components/schemas/TimeInterval'
+            $ref: "#/components/schemas/TimeInterval"
         remove:
           type: array
           items:
-            $ref: '#/components/schemas/TimeInterval'
+            $ref: "#/components/schemas/TimeInterval"
 
     AvailabilityUpdate:
       type: object
@@ -108,7 +108,7 @@ components:
         user_id:
           type: string
         changes:
-          $ref: '#/components/schemas/AvailabilityChanges'
+          $ref: "#/components/schemas/AvailabilityChanges"
 
     Course:
       type: object
@@ -164,9 +164,9 @@ components:
       type: object
       properties:
         students:
-          $ref: '#/components/schemas/CourseParticipantChanges'
+          $ref: "#/components/schemas/CourseParticipantChanges"
         teachers:
-          $ref: '#/components/schemas/CourseParticipantChanges'
+          $ref: "#/components/schemas/CourseParticipantChanges"
         course_name:
           type: string
         start_at:
@@ -298,11 +298,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organization'
+              $ref: "#/components/schemas/Organization"
       responses:
-        '201':
+        "201":
           description: Organization created successfully
-        '400':
+        "400":
           description: Bad request
 
     delete:
@@ -316,9 +316,9 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: Organization deleted successfully
-        '404':
+        "404":
           description: Organization not found
 
   /v1/user/{user_id}:
@@ -337,11 +337,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
       responses:
-        '201':
+        "201":
           description: User created successfully
-        '400':
+        "400":
           description: Bad request
 
     get:
@@ -355,13 +355,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: User details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '404':
+                $ref: "#/components/schemas/User"
+        "404":
           description: User not found
 
     patch:
@@ -379,11 +379,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdate'
+              $ref: "#/components/schemas/UserUpdate"
       responses:
-        '200':
+        "200":
           description: User updated successfully
-        '404':
+        "404":
           description: User not found
 
     delete:
@@ -397,9 +397,9 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: User deleted successfully
-        '404':
+        "404":
           description: User not found
 
   /v1/user:
@@ -408,14 +408,14 @@ paths:
       operationId: listUsers
       tags: [User]
       responses:
-        '200':
+        "200":
           description: List of users
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
 
   /v1/user/{user_id}/availability:
     post:
@@ -433,11 +433,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Availability'
+              $ref: "#/components/schemas/Availability"
       responses:
-        '201':
+        "201":
           description: Availability created successfully
-        '400':
+        "400":
           description: Bad request
 
     get:
@@ -451,13 +451,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: User availability
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Availability'
-        '404':
+                $ref: "#/components/schemas/Availability"
+        "404":
           description: User not found
 
     patch:
@@ -475,11 +475,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AvailabilityUpdate'
+              $ref: "#/components/schemas/AvailabilityUpdate"
       responses:
-        '200':
+        "200":
           description: Availability updated successfully
-        '404':
+        "404":
           description: User not found
 
   /v1/availability:
@@ -492,16 +492,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BatchAvailabilityRequest'
+              $ref: "#/components/schemas/BatchAvailabilityRequest"
       responses:
-        '200':
+        "200":
           description: Batch availability data
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Availability'
+                  $ref: "#/components/schemas/Availability"
 
   /v1/course:
     post:
@@ -513,11 +513,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Course'
+              $ref: "#/components/schemas/Course"
       responses:
-        '201':
+        "201":
           description: Course created successfully
-        '400':
+        "400":
           description: Bad request
 
     get:
@@ -525,14 +525,14 @@ paths:
       operationId: listCourses
       tags: [Course]
       responses:
-        '200':
+        "200":
           description: List of courses
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Course'
+                  $ref: "#/components/schemas/Course"
 
   /v1/course/{course_id}:
     post:
@@ -550,11 +550,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CourseUpdate'
+              $ref: "#/components/schemas/CourseUpdate"
       responses:
-        '200':
+        "200":
           description: Course updated successfully
-        '404':
+        "404":
           description: Course not found
 
     get:
@@ -568,13 +568,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Course details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Course'
-        '404':
+                $ref: "#/components/schemas/Course"
+        "404":
           description: Course not found
 
   /v1/class:
@@ -587,11 +587,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Class'
+              $ref: "#/components/schemas/Class"
       responses:
-        '201':
+        "201":
           description: Class created successfully
-        '400':
+        "400":
           description: Bad request
 
   /v1/class/user:
@@ -604,16 +604,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserClassesRequest'
+              $ref: "#/components/schemas/UserClassesRequest"
       responses:
-        '200':
+        "200":
           description: User classes
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Class'
+                  $ref: "#/components/schemas/Class"
 
   /v1/class/course:
     get:
@@ -625,16 +625,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CourseClassesRequest'
+              $ref: "#/components/schemas/CourseClassesRequest"
       responses:
-        '200':
+        "200":
           description: Course classes
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Class'
+                  $ref: "#/components/schemas/Class"
 
   /v1/trackers/course:
     get:
@@ -646,13 +646,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CourseTrackersRequest'
+              $ref: "#/components/schemas/CourseTrackersRequest"
       responses:
-        '200':
+        "200":
           description: Course trackers
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tracker'
+                  $ref: "#/components/schemas/Tracker"
