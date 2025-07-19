@@ -1,0 +1,620 @@
+openapi: 3.0.3
+info:
+  title: Scheduler API
+  description: API for managing student and tutor scheduling
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+components:
+  schemas:
+    Organization:
+      type: object
+      required:
+        - organization_id
+        - name
+      properties:
+        organization_id:
+          type: string
+        name:
+          type: string
+
+    User:
+      type: object
+      required:
+        - user_id
+        - org_id
+        - first_name
+        - last_name
+        - role
+      properties:
+        user_id:
+          type: string
+        org_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          type: string
+        role:
+          type: string
+          enum: [Admin, Student, Tutor]
+        email:
+          type: string
+          format: email
+        courses:
+          type: array
+          items:
+            type: string
+
+    UserUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          type: string
+        role:
+          type: string
+          enum: [Admin, Student, Tutor]
+        email:
+          type: string
+          format: email
+
+    TimeInterval:
+      type: array
+      items:
+        type: string
+        format: date-time
+      minItems: 2
+      maxItems: 2
+
+    Availability:
+      type: object
+      required:
+        - user_id
+        - available_time_intervals
+      properties:
+        user_id:
+          type: string
+        available_time_intervals:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeInterval'
+
+    AvailabilityChanges:
+      type: object
+      properties:
+        add:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeInterval'
+        remove:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeInterval'
+
+    AvailabilityUpdate:
+      type: object
+      required:
+        - user_id
+        - changes
+      properties:
+        user_id:
+          type: string
+        changes:
+          $ref: '#/components/schemas/AvailabilityChanges'
+
+    Course:
+      type: object
+      required:
+        - course_id
+        - course_name
+        - students
+        - tutors
+        - start_at
+        - end_at
+        - interval
+        - frequency
+      properties:
+        course_id:
+          type: string
+        course_name:
+          type: string
+        course_description:
+          type: string
+        students:
+          type: array
+          items:
+            type: string
+        tutors:
+          type: array
+          items:
+            type: string
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        interval:
+          type: string
+          enum: [weekly, monthly, bi-weekly]
+        frequency:
+          type: integer
+
+    CourseParticipantChanges:
+      type: object
+      properties:
+        add:
+          type: array
+          items:
+            type: string
+        remove:
+          type: array
+          items:
+            type: string
+
+    CourseUpdate:
+      type: object
+      properties:
+        students:
+          $ref: '#/components/schemas/CourseParticipantChanges'
+        teachers:
+          $ref: '#/components/schemas/CourseParticipantChanges'
+        course_name:
+          type: string
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        interval:
+          type: string
+          enum: [weekly, monthly, bi-weekly]
+        frequency:
+          type: integer
+
+    Class:
+      type: object
+      required:
+        - class_id
+        - start
+        - duration
+        - students
+        - teachers
+      properties:
+        class_id:
+          type: string
+        course_id:
+          type: string
+        start:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+          description: Duration in minutes
+        students:
+          type: array
+          items:
+            type: string
+        teachers:
+          type: array
+          items:
+            type: string
+
+    BatchAvailabilityRequest:
+      type: object
+      required:
+        - user_ids
+      properties:
+        user_ids:
+          type: array
+          items:
+            type: string
+
+    UserClassesRequest:
+      type: object
+      required:
+        - user_id
+      properties:
+        user_id:
+          type: string
+
+    CourseClassesRequest:
+      type: object
+      required:
+        - course_id
+      properties:
+        course_id:
+          type: string
+
+    CourseTrackersRequest:
+      type: object
+      required:
+        - course_id
+      properties:
+        course_id:
+          type: string
+
+    Tracker:
+      type: object
+      required:
+        - tracking_id
+        - course_id
+        - period_start
+        - period_end
+        - required
+        - scheduled
+        - completed
+        - status
+      properties:
+        tracking_id:
+          type: string
+        course_id:
+          type: string
+        period_start:
+          type: string
+          format: date-time
+        period_end:
+          type: string
+          format: date-time
+        required:
+          type: integer
+        scheduled:
+          type: array
+          items:
+            type: string
+          description: Array of class IDs
+        completed:
+          type: array
+          items:
+            type: string
+          description: Array of class IDs
+        status:
+          type: string
+          enum: [fulfilled, scheduled, unscheduled, skipped]
+
+paths:
+  /v1/org/{org_id}:
+    post:
+      summary: Create a new organization
+      parameters:
+        - name: org_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+      responses:
+        '201':
+          description: Organization created successfully
+        '400':
+          description: Bad request
+
+    delete:
+      summary: Delete an organization
+      parameters:
+        - name: org_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Organization deleted successfully
+        '404':
+          description: Organization not found
+
+  /v1/user/{user_id}:
+    post:
+      summary: Create a new user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Bad request
+
+    get:
+      summary: Get a user by ID
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+    patch:
+      summary: Update a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: User updated successfully
+        '404':
+          description: User not found
+
+    delete:
+      summary: Delete a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+
+  /v1/user:
+    get:
+      summary: Get all users
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+  /v1/user/{user_id}/availability:
+    post:
+      summary: Create availability for a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Availability'
+      responses:
+        '201':
+          description: Availability created successfully
+        '400':
+          description: Bad request
+
+    get:
+      summary: Get availability for a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User availability
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Availability'
+        '404':
+          description: User not found
+
+    patch:
+      summary: Update availability for a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilityUpdate'
+      responses:
+        '200':
+          description: Availability updated successfully
+        '404':
+          description: User not found
+
+  /v1/availability:
+    get:
+      summary: Get availability for multiple users (batch)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchAvailabilityRequest'
+      responses:
+        '200':
+          description: Batch availability data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Availability'
+
+  /v1/course:
+    post:
+      summary: Create a new course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        '201':
+          description: Course created successfully
+        '400':
+          description: Bad request
+
+    get:
+      summary: Get all courses
+      responses:
+        '200':
+          description: List of courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+
+  /v1/course/{course_id}:
+    post:
+      summary: Update a course
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseUpdate'
+      responses:
+        '200':
+          description: Course updated successfully
+        '404':
+          description: Course not found
+
+    get:
+      summary: Get a course by ID
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Course details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '404':
+          description: Course not found
+
+  /v1/class:
+    post:
+      summary: Create a new class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Class'
+      responses:
+        '201':
+          description: Class created successfully
+        '400':
+          description: Bad request
+
+  /v1/class/user:
+    get:
+      summary: Get classes for a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserClassesRequest'
+      responses:
+        '200':
+          description: User classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Class'
+
+  /v1/class/course:
+    get:
+      summary: Get classes for a course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseClassesRequest'
+      responses:
+        '200':
+          description: Course classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Class'
+
+  /v1/trackers/course:
+    get:
+      summary: Get trackers for a course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseTrackersRequest'
+      responses:
+        '200':
+          description: Course trackers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tracker'
