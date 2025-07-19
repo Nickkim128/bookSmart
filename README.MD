@@ -32,7 +32,19 @@ A Go-based REST API for managing student and tutor scheduling, built with OpenAP
    go mod download
    ```
 
-3. **Generate API code from OpenAPI spec**
+3. **Set up code quality tools**
+
+   ```bash
+   # Install pre-commit
+   pip install pre-commit
+   # or
+   brew install pre-commit
+
+   # Install the hooks
+   pre-commit install
+   ```
+
+4. **Generate API code from OpenAPI spec**
 
    ```bash
    go generate ./...
@@ -81,6 +93,16 @@ The OpenAPI specification is located at `internal/scheduler/scheduler.openapi.ym
 
 - [Swagger Editor](https://editor.swagger.io/) (paste the YAML content)
 - Any OpenAPI-compatible tool
+
+## Code Quality & Linting
+
+### Run linting
+
+```bash
+just lint
+```
+
+The linters will automatically run on every commit.
 
 ## Next Steps
 
