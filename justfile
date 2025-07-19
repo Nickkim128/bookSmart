@@ -8,6 +8,7 @@ setup-pre-commit:
 # Run all pre-commit rules against all files
 lint:
     pre-commit run --all-files
+    rm -rf node_modules
 
 # Run the application with environment variables loaded
 run:
