@@ -94,6 +94,18 @@ The OpenAPI specification is located at `internal/scheduler/scheduler.openapi.ym
 - [Swagger Editor](https://editor.swagger.io/) (paste the YAML content)
 - Any OpenAPI-compatible tool
 
+## Running the Server
+
+### Start the development server
+
+```bash
+just run
+```
+
+This will load environment variables from `.env.local` and start the server on port 8000.
+
+API documentation will be available at: <http://localhost:8000/swagger/>
+
 ## Code Quality & Linting
 
 ### Run linting
