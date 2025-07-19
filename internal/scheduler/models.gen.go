@@ -185,38 +185,38 @@ type UserUpdate struct {
 // UserUpdateRole defines model for UserUpdate.Role.
 type UserUpdateRole string
 
-// GetV1AvailabilityJSONRequestBody defines body for GetV1Availability for application/json ContentType.
-type GetV1AvailabilityJSONRequestBody = BatchAvailabilityRequest
+// GetBatchAvailabilityJSONRequestBody defines body for GetBatchAvailability for application/json ContentType.
+type GetBatchAvailabilityJSONRequestBody = BatchAvailabilityRequest
 
-// PostV1ClassJSONRequestBody defines body for PostV1Class for application/json ContentType.
-type PostV1ClassJSONRequestBody = Class
+// CreateClassJSONRequestBody defines body for CreateClass for application/json ContentType.
+type CreateClassJSONRequestBody = Class
 
-// GetV1ClassCourseJSONRequestBody defines body for GetV1ClassCourse for application/json ContentType.
-type GetV1ClassCourseJSONRequestBody = CourseClassesRequest
+// ListCourseClassesJSONRequestBody defines body for ListCourseClasses for application/json ContentType.
+type ListCourseClassesJSONRequestBody = CourseClassesRequest
 
-// GetV1ClassUserJSONRequestBody defines body for GetV1ClassUser for application/json ContentType.
-type GetV1ClassUserJSONRequestBody = UserClassesRequest
+// ListUserClassesJSONRequestBody defines body for ListUserClasses for application/json ContentType.
+type ListUserClassesJSONRequestBody = UserClassesRequest
 
-// PostV1CourseJSONRequestBody defines body for PostV1Course for application/json ContentType.
-type PostV1CourseJSONRequestBody = Course
+// CreateCourseJSONRequestBody defines body for CreateCourse for application/json ContentType.
+type CreateCourseJSONRequestBody = Course
 
-// PostV1CourseCourseIdJSONRequestBody defines body for PostV1CourseCourseId for application/json ContentType.
-type PostV1CourseCourseIdJSONRequestBody = CourseUpdate
+// UpdateCourseJSONRequestBody defines body for UpdateCourse for application/json ContentType.
+type UpdateCourseJSONRequestBody = CourseUpdate
 
-// PostV1OrgOrgIdJSONRequestBody defines body for PostV1OrgOrgId for application/json ContentType.
-type PostV1OrgOrgIdJSONRequestBody = Organization
+// CreateOrgJSONRequestBody defines body for CreateOrg for application/json ContentType.
+type CreateOrgJSONRequestBody = Organization
 
-// GetV1TrackersCourseJSONRequestBody defines body for GetV1TrackersCourse for application/json ContentType.
-type GetV1TrackersCourseJSONRequestBody = CourseTrackersRequest
+// GetTrackersJSONRequestBody defines body for GetTrackers for application/json ContentType.
+type GetTrackersJSONRequestBody = CourseTrackersRequest
 
-// PatchV1UserUserIdJSONRequestBody defines body for PatchV1UserUserId for application/json ContentType.
-type PatchV1UserUserIdJSONRequestBody = UserUpdate
+// UpdateUserJSONRequestBody defines body for UpdateUser for application/json ContentType.
+type UpdateUserJSONRequestBody = UserUpdate
 
-// PostV1UserUserIdJSONRequestBody defines body for PostV1UserUserId for application/json ContentType.
-type PostV1UserUserIdJSONRequestBody = User
+// CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
+type CreateUserJSONRequestBody = User
 
-// PatchV1UserUserIdAvailabilityJSONRequestBody defines body for PatchV1UserUserIdAvailability for application/json ContentType.
-type PatchV1UserUserIdAvailabilityJSONRequestBody = AvailabilityUpdate
+// UpdateAvailabilityJSONRequestBody defines body for UpdateAvailability for application/json ContentType.
+type UpdateAvailabilityJSONRequestBody = AvailabilityUpdate
 
-// PostV1UserUserIdAvailabilityJSONRequestBody defines body for PostV1UserUserIdAvailability for application/json ContentType.
-type PostV1UserUserIdAvailabilityJSONRequestBody = Availability
+// CreateAvailabilityJSONRequestBody defines body for CreateAvailability for application/json ContentType.
+type CreateAvailabilityJSONRequestBody = Availability

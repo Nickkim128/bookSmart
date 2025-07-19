@@ -22,61 +22,61 @@ import (
 type ServerInterface interface {
 	// Get availability for multiple users (batch)
 	// (GET /v1/availability)
-	GetV1Availability(c *gin.Context)
+	GetBatchAvailability(c *gin.Context)
 	// Create a new class
 	// (POST /v1/class)
-	PostV1Class(c *gin.Context)
-	// Get classes for a course
+	CreateClass(c *gin.Context)
+	// List classes for a course
 	// (GET /v1/class/course)
-	GetV1ClassCourse(c *gin.Context)
-	// Get classes for a user
+	ListCourseClasses(c *gin.Context)
+	// List classes for a user
 	// (GET /v1/class/user)
-	GetV1ClassUser(c *gin.Context)
+	ListUserClasses(c *gin.Context)
 	// Get all courses
 	// (GET /v1/course)
-	GetV1Course(c *gin.Context)
+	ListCourses(c *gin.Context)
 	// Create a new course
 	// (POST /v1/course)
-	PostV1Course(c *gin.Context)
+	CreateCourse(c *gin.Context)
 	// Get a course by ID
 	// (GET /v1/course/{course_id})
-	GetV1CourseCourseId(c *gin.Context, courseId string)
+	GetCourse(c *gin.Context, courseId string)
 	// Update a course
 	// (POST /v1/course/{course_id})
-	PostV1CourseCourseId(c *gin.Context, courseId string)
+	UpdateCourse(c *gin.Context, courseId string)
 	// Delete an organization
 	// (DELETE /v1/org/{org_id})
-	DeleteV1OrgOrgId(c *gin.Context, orgId string)
+	DeleteOrg(c *gin.Context, orgId string)
 	// Create a new organization
 	// (POST /v1/org/{org_id})
-	PostV1OrgOrgId(c *gin.Context, orgId string)
+	CreateOrg(c *gin.Context, orgId string)
 	// Get trackers for a course
 	// (GET /v1/trackers/course)
-	GetV1TrackersCourse(c *gin.Context)
+	GetTrackers(c *gin.Context)
 	// Get all users
 	// (GET /v1/user)
-	GetV1User(c *gin.Context)
+	ListUsers(c *gin.Context)
 	// Delete a user
 	// (DELETE /v1/user/{user_id})
-	DeleteV1UserUserId(c *gin.Context, userId string)
+	DeleteUser(c *gin.Context, userId string)
 	// Get a user by ID
 	// (GET /v1/user/{user_id})
-	GetV1UserUserId(c *gin.Context, userId string)
+	GetUser(c *gin.Context, userId string)
 	// Update a user
 	// (PATCH /v1/user/{user_id})
-	PatchV1UserUserId(c *gin.Context, userId string)
+	UpdateUser(c *gin.Context, userId string)
 	// Create a new user
 	// (POST /v1/user/{user_id})
-	PostV1UserUserId(c *gin.Context, userId string)
+	CreateUser(c *gin.Context, userId string)
 	// Get availability for a user
 	// (GET /v1/user/{user_id}/availability)
-	GetV1UserUserIdAvailability(c *gin.Context, userId string)
+	GetAvailability(c *gin.Context, userId string)
 	// Update availability for a user
 	// (PATCH /v1/user/{user_id}/availability)
-	PatchV1UserUserIdAvailability(c *gin.Context, userId string)
+	UpdateAvailability(c *gin.Context, userId string)
 	// Create availability for a user
 	// (POST /v1/user/{user_id}/availability)
-	PostV1UserUserIdAvailability(c *gin.Context, userId string)
+	CreateAvailability(c *gin.Context, userId string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -88,8 +88,8 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(c *gin.Context)
 
-// GetV1Availability operation middleware
-func (siw *ServerInterfaceWrapper) GetV1Availability(c *gin.Context) {
+// GetBatchAvailability operation middleware
+func (siw *ServerInterfaceWrapper) GetBatchAvailability(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -98,11 +98,11 @@ func (siw *ServerInterfaceWrapper) GetV1Availability(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetV1Availability(c)
+	siw.Handler.GetBatchAvailability(c)
 }
 
-// PostV1Class operation middleware
-func (siw *ServerInterfaceWrapper) PostV1Class(c *gin.Context) {
+// CreateClass operation middleware
+func (siw *ServerInterfaceWrapper) CreateClass(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -111,11 +111,11 @@ func (siw *ServerInterfaceWrapper) PostV1Class(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostV1Class(c)
+	siw.Handler.CreateClass(c)
 }
 
-// GetV1ClassCourse operation middleware
-func (siw *ServerInterfaceWrapper) GetV1ClassCourse(c *gin.Context) {
+// ListCourseClasses operation middleware
+func (siw *ServerInterfaceWrapper) ListCourseClasses(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -124,11 +124,11 @@ func (siw *ServerInterfaceWrapper) GetV1ClassCourse(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetV1ClassCourse(c)
+	siw.Handler.ListCourseClasses(c)
 }
 
-// GetV1ClassUser operation middleware
-func (siw *ServerInterfaceWrapper) GetV1ClassUser(c *gin.Context) {
+// ListUserClasses operation middleware
+func (siw *ServerInterfaceWrapper) ListUserClasses(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -137,11 +137,11 @@ func (siw *ServerInterfaceWrapper) GetV1ClassUser(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetV1ClassUser(c)
+	siw.Handler.ListUserClasses(c)
 }
 
-// GetV1Course operation middleware
-func (siw *ServerInterfaceWrapper) GetV1Course(c *gin.Context) {
+// ListCourses operation middleware
+func (siw *ServerInterfaceWrapper) ListCourses(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -150,11 +150,11 @@ func (siw *ServerInterfaceWrapper) GetV1Course(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetV1Course(c)
+	siw.Handler.ListCourses(c)
 }
 
-// PostV1Course operation middleware
-func (siw *ServerInterfaceWrapper) PostV1Course(c *gin.Context) {
+// CreateCourse operation middleware
+func (siw *ServerInterfaceWrapper) CreateCourse(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -163,11 +163,11 @@ func (siw *ServerInterfaceWrapper) PostV1Course(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostV1Course(c)
+	siw.Handler.CreateCourse(c)
 }
 
-// GetV1CourseCourseId operation middleware
-func (siw *ServerInterfaceWrapper) GetV1CourseCourseId(c *gin.Context) {
+// GetCourse operation middleware
+func (siw *ServerInterfaceWrapper) GetCourse(c *gin.Context) {
 
 	var err error
 
@@ -187,11 +187,11 @@ func (siw *ServerInterfaceWrapper) GetV1CourseCourseId(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetV1CourseCourseId(c, courseId)
+	siw.Handler.GetCourse(c, courseId)
 }
 
-// PostV1CourseCourseId operation middleware
-func (siw *ServerInterfaceWrapper) PostV1CourseCourseId(c *gin.Context) {
+// UpdateCourse operation middleware
+func (siw *ServerInterfaceWrapper) UpdateCourse(c *gin.Context) {
 
 	var err error
 
@@ -211,11 +211,11 @@ func (siw *ServerInterfaceWrapper) PostV1CourseCourseId(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostV1CourseCourseId(c, courseId)
+	siw.Handler.UpdateCourse(c, courseId)
 }
 
-// DeleteV1OrgOrgId operation middleware
-func (siw *ServerInterfaceWrapper) DeleteV1OrgOrgId(c *gin.Context) {
+// DeleteOrg operation middleware
+func (siw *ServerInterfaceWrapper) DeleteOrg(c *gin.Context) {
 
 	var err error
 
@@ -235,11 +235,11 @@ func (siw *ServerInterfaceWrapper) DeleteV1OrgOrgId(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.DeleteV1OrgOrgId(c, orgId)
+	siw.Handler.DeleteOrg(c, orgId)
 }
 
-// PostV1OrgOrgId operation middleware
-func (siw *ServerInterfaceWrapper) PostV1OrgOrgId(c *gin.Context) {
+// CreateOrg operation middleware
+func (siw *ServerInterfaceWrapper) CreateOrg(c *gin.Context) {
 
 	var err error
 
@@ -259,11 +259,11 @@ func (siw *ServerInterfaceWrapper) PostV1OrgOrgId(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostV1OrgOrgId(c, orgId)
+	siw.Handler.CreateOrg(c, orgId)
 }
 
-// GetV1TrackersCourse operation middleware
-func (siw *ServerInterfaceWrapper) GetV1TrackersCourse(c *gin.Context) {
+// GetTrackers operation middleware
+func (siw *ServerInterfaceWrapper) GetTrackers(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -272,11 +272,11 @@ func (siw *ServerInterfaceWrapper) GetV1TrackersCourse(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetV1TrackersCourse(c)
+	siw.Handler.GetTrackers(c)
 }
 
-// GetV1User operation middleware
-func (siw *ServerInterfaceWrapper) GetV1User(c *gin.Context) {
+// ListUsers operation middleware
+func (siw *ServerInterfaceWrapper) ListUsers(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -285,11 +285,11 @@ func (siw *ServerInterfaceWrapper) GetV1User(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetV1User(c)
+	siw.Handler.ListUsers(c)
 }
 
-// DeleteV1UserUserId operation middleware
-func (siw *ServerInterfaceWrapper) DeleteV1UserUserId(c *gin.Context) {
+// DeleteUser operation middleware
+func (siw *ServerInterfaceWrapper) DeleteUser(c *gin.Context) {
 
 	var err error
 
@@ -309,11 +309,11 @@ func (siw *ServerInterfaceWrapper) DeleteV1UserUserId(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.DeleteV1UserUserId(c, userId)
+	siw.Handler.DeleteUser(c, userId)
 }
 
-// GetV1UserUserId operation middleware
-func (siw *ServerInterfaceWrapper) GetV1UserUserId(c *gin.Context) {
+// GetUser operation middleware
+func (siw *ServerInterfaceWrapper) GetUser(c *gin.Context) {
 
 	var err error
 
@@ -333,11 +333,11 @@ func (siw *ServerInterfaceWrapper) GetV1UserUserId(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetV1UserUserId(c, userId)
+	siw.Handler.GetUser(c, userId)
 }
 
-// PatchV1UserUserId operation middleware
-func (siw *ServerInterfaceWrapper) PatchV1UserUserId(c *gin.Context) {
+// UpdateUser operation middleware
+func (siw *ServerInterfaceWrapper) UpdateUser(c *gin.Context) {
 
 	var err error
 
@@ -357,11 +357,11 @@ func (siw *ServerInterfaceWrapper) PatchV1UserUserId(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PatchV1UserUserId(c, userId)
+	siw.Handler.UpdateUser(c, userId)
 }
 
-// PostV1UserUserId operation middleware
-func (siw *ServerInterfaceWrapper) PostV1UserUserId(c *gin.Context) {
+// CreateUser operation middleware
+func (siw *ServerInterfaceWrapper) CreateUser(c *gin.Context) {
 
 	var err error
 
@@ -381,11 +381,11 @@ func (siw *ServerInterfaceWrapper) PostV1UserUserId(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PostV1UserUserId(c, userId)
+	siw.Handler.CreateUser(c, userId)
 }
 
-// GetV1UserUserIdAvailability operation middleware
-func (siw *ServerInterfaceWrapper) GetV1UserUserIdAvailability(c *gin.Context) {
+// GetAvailability operation middleware
+func (siw *ServerInterfaceWrapper) GetAvailability(c *gin.Context) {
 
 	var err error
 
@@ -405,11 +405,11 @@ func (siw *ServerInterfaceWrapper) GetV1UserUserIdAvailability(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetV1UserUserIdAvailability(c, userId)
+	siw.Handler.GetAvailability(c, userId)
 }
 
-// PatchV1UserUserIdAvailability operation middleware
-func (siw *ServerInterfaceWrapper) PatchV1UserUserIdAvailability(c *gin.Context) {
+// UpdateAvailability operation middleware
+func (siw *ServerInterfaceWrapper) UpdateAvailability(c *gin.Context) {
 
 	var err error
 
@@ -429,11 +429,11 @@ func (siw *ServerInterfaceWrapper) PatchV1UserUserIdAvailability(c *gin.Context)
 		}
 	}
 
-	siw.Handler.PatchV1UserUserIdAvailability(c, userId)
+	siw.Handler.UpdateAvailability(c, userId)
 }
 
-// PostV1UserUserIdAvailability operation middleware
-func (siw *ServerInterfaceWrapper) PostV1UserUserIdAvailability(c *gin.Context) {
+// CreateAvailability operation middleware
+func (siw *ServerInterfaceWrapper) CreateAvailability(c *gin.Context) {
 
 	var err error
 
@@ -453,7 +453,7 @@ func (siw *ServerInterfaceWrapper) PostV1UserUserIdAvailability(c *gin.Context) 
 		}
 	}
 
-	siw.Handler.PostV1UserUserIdAvailability(c, userId)
+	siw.Handler.CreateAvailability(c, userId)
 }
 
 // GinServerOptions provides options for the Gin server.
@@ -483,57 +483,58 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 		ErrorHandler:       errorHandler,
 	}
 
-	router.GET(options.BaseURL+"/v1/availability", wrapper.GetV1Availability)
-	router.POST(options.BaseURL+"/v1/class", wrapper.PostV1Class)
-	router.GET(options.BaseURL+"/v1/class/course", wrapper.GetV1ClassCourse)
-	router.GET(options.BaseURL+"/v1/class/user", wrapper.GetV1ClassUser)
-	router.GET(options.BaseURL+"/v1/course", wrapper.GetV1Course)
-	router.POST(options.BaseURL+"/v1/course", wrapper.PostV1Course)
-	router.GET(options.BaseURL+"/v1/course/:course_id", wrapper.GetV1CourseCourseId)
-	router.POST(options.BaseURL+"/v1/course/:course_id", wrapper.PostV1CourseCourseId)
-	router.DELETE(options.BaseURL+"/v1/org/:org_id", wrapper.DeleteV1OrgOrgId)
-	router.POST(options.BaseURL+"/v1/org/:org_id", wrapper.PostV1OrgOrgId)
-	router.GET(options.BaseURL+"/v1/trackers/course", wrapper.GetV1TrackersCourse)
-	router.GET(options.BaseURL+"/v1/user", wrapper.GetV1User)
-	router.DELETE(options.BaseURL+"/v1/user/:user_id", wrapper.DeleteV1UserUserId)
-	router.GET(options.BaseURL+"/v1/user/:user_id", wrapper.GetV1UserUserId)
-	router.PATCH(options.BaseURL+"/v1/user/:user_id", wrapper.PatchV1UserUserId)
-	router.POST(options.BaseURL+"/v1/user/:user_id", wrapper.PostV1UserUserId)
-	router.GET(options.BaseURL+"/v1/user/:user_id/availability", wrapper.GetV1UserUserIdAvailability)
-	router.PATCH(options.BaseURL+"/v1/user/:user_id/availability", wrapper.PatchV1UserUserIdAvailability)
-	router.POST(options.BaseURL+"/v1/user/:user_id/availability", wrapper.PostV1UserUserIdAvailability)
+	router.GET(options.BaseURL+"/v1/availability", wrapper.GetBatchAvailability)
+	router.POST(options.BaseURL+"/v1/class", wrapper.CreateClass)
+	router.GET(options.BaseURL+"/v1/class/course", wrapper.ListCourseClasses)
+	router.GET(options.BaseURL+"/v1/class/user", wrapper.ListUserClasses)
+	router.GET(options.BaseURL+"/v1/course", wrapper.ListCourses)
+	router.POST(options.BaseURL+"/v1/course", wrapper.CreateCourse)
+	router.GET(options.BaseURL+"/v1/course/:course_id", wrapper.GetCourse)
+	router.POST(options.BaseURL+"/v1/course/:course_id", wrapper.UpdateCourse)
+	router.DELETE(options.BaseURL+"/v1/org/:org_id", wrapper.DeleteOrg)
+	router.POST(options.BaseURL+"/v1/org/:org_id", wrapper.CreateOrg)
+	router.GET(options.BaseURL+"/v1/trackers/course", wrapper.GetTrackers)
+	router.GET(options.BaseURL+"/v1/user", wrapper.ListUsers)
+	router.DELETE(options.BaseURL+"/v1/user/:user_id", wrapper.DeleteUser)
+	router.GET(options.BaseURL+"/v1/user/:user_id", wrapper.GetUser)
+	router.PATCH(options.BaseURL+"/v1/user/:user_id", wrapper.UpdateUser)
+	router.POST(options.BaseURL+"/v1/user/:user_id", wrapper.CreateUser)
+	router.GET(options.BaseURL+"/v1/user/:user_id/availability", wrapper.GetAvailability)
+	router.PATCH(options.BaseURL+"/v1/user/:user_id/availability", wrapper.UpdateAvailability)
+	router.POST(options.BaseURL+"/v1/user/:user_id/availability", wrapper.CreateAvailability)
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"25vt3wEAAP//Y1I6uY0sAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
