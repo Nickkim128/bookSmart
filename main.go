@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"scheduler-api/internal/scheduler"
+	"github.com/nickkim128/bookSmart/internal/scheduler"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
