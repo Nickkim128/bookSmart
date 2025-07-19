@@ -1,0 +1,76 @@
+name: Check Changes
+
+on: # yamllint disable-line rule:truthy
+  pull_request:
+  push:
+    branches: [main]
+
+# Why? Automatically cancel in-progress checks if a new commit is pushed to the same branch, since the
+# new commit will trigger a new check run that's more relevant. This saves build minutes at the margin.
+# Docs: https://docs.github.com/en/actions/using-jobs/using-concurrency#example-only-cancel-in-progress-jobs-or-runs-for-the-current-workflow
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          lfs: true
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-python@v4
+      - uses: pre-commit/action@v3.0.0
+
+  test-suite:
+    permissions:
+      contents: read
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout bookSmart Service
+        uses: actions/checkout@v3
+        with:
+          path: bookSmart
+          lfs: true
+
+      # Setup system tooling
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: bookSmart/go.mod
+          cache: true
+          cache-dependency-path: bookSmart/go.sum
+
+      - name: Install gotestsum
+        run: go install gotest.tools/gotestsum@latest
+
+      # Run the test suite
+      - name: Run tests
+        working-directory: ./bookSmart
+        env:
+          GOTESTSUM_FORMAT: testdox
+        run: |
+          gotestsum -- -v -covermode=count -coverpkg=./... -coverprofile=coverage.out ./...
+
+      - name: Strip out generated files
+        run: |
+          sed -i '/\.gen\.go/d' coverage.out
+          sed -i '/\.generated\.go/d' coverage.out
+        working-directory: ./bookSmart
+
+      - name: Convert coverage to lcov
+        uses: jandelgado/gcov2lcov-action@v1
+        with:
+          working-directory: ./bookSmart
+
+      - name: Coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.github_token }}
+          lcov-file: ./bookSmart/coverage.lcov
+          delete-old-comments: true
