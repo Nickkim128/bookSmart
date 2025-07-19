@@ -19,7 +19,6 @@ repos:
     hooks:
       - id: go-build
       - id: go-mod-tidy
-      - id: go-mod-vendor
 
   # How do I disable the linter when a false positive is occurring?
   # https://golangci-lint.run/usage/false-positives/#nolint-directive

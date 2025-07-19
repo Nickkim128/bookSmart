@@ -7,11 +7,14 @@ This document explains how to set up and deploy the PostgreSQL database schema f
 1. **Create a Neon project** at [neon.tech](https://neon.tech)
 2. **Copy your DATABASE_URL** from the Neon dashboard
 3. **Set up environment variables**:
+
    ```bash
    cp .env.example .env
    # Edit .env and set your DATABASE_URL
    ```
+
 4. **Run migrations**:
+
    ```bash
    go run cmd/migrate/main.go -neon
    ```
@@ -41,7 +44,7 @@ The database consists of 10 tables supporting a multi-tenant scheduling system:
 
 ## Files Structure
 
-```
+```text
 /migrations/
 ├── 001_create_tables.sql    # Core schema with foreign keys and constraints
 ├── 002_create_indexes.sql   # Performance indexes for queries

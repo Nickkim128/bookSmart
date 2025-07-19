@@ -3,100 +3,72 @@
 -- Compatible with: PostgreSQL/Neon
 
 -- Organization indexes
-CREATE INDEX idx_organizations_name ON organizations (name);
+create index idx_organizations_name on organizations (name);
 
 -- User indexes
-CREATE INDEX idx_users_org_id ON users (org_id);
-CREATE INDEX idx_users_role ON users (role);
-CREATE INDEX idx_users_email ON users (email);
-CREATE INDEX idx_users_org_role ON users (org_id, role);
+create index idx_users_org_id on users (org_id);
+create index idx_users_role on users (role);
+create index idx_users_email on users (email);
+create index idx_users_org_role on users (org_id, role);
 
 -- Course indexes
-CREATE INDEX idx_courses_org_id ON courses (org_id);
-CREATE INDEX idx_courses_name ON courses (course_name);
-CREATE INDEX idx_courses_time_range ON courses (start_at, end_at);
-CREATE INDEX idx_courses_interval ON courses (interval);
+create index idx_courses_org_id on courses (org_id);
+create index idx_courses_name on courses (course_name);
+create index idx_courses_time_range on courses (start_at, end_at);
+create index idx_courses_interval on courses (interval);
 
 -- UserCourse indexes
-CREATE INDEX idx_user_courses_user_id ON user_courses (user_id);
-CREATE INDEX idx_user_courses_course_id ON user_courses (course_id);
-CREATE INDEX idx_user_courses_status ON user_courses (status);
+create index idx_user_courses_user_id on user_courses (user_id);
+create index idx_user_courses_course_id on user_courses (course_id);
+create index idx_user_courses_status on user_courses (status);
 
 -- Availability indexes (critical for calendar queries)
-CREATE INDEX idx_availability_user_id ON availability (user_id);
-CREATE INDEX idx_availability_org_id ON availability (org_id);
-CREATE INDEX idx_availability_time_range ON availability (start_time, end_time);
-CREATE INDEX idx_availability_user_time ON availability (
-    user_id, start_time, end_time
-);
-CREATE INDEX idx_availability_org_time ON availability (
-    org_id, start_time, end_time
-);
-CREATE INDEX idx_availability_role ON availability (role);
-CREATE INDEX idx_availability_matched ON availability (matched);
-CREATE INDEX idx_availability_unmatched_time ON availability (
-    start_time, end_time
-) WHERE matched
-= FALSE;
+create index idx_availability_user_id on availability (user_id);
+create index idx_availability_org_id on availability (org_id);
+create index idx_availability_time_range on availability (start_time, end_time);
+create index idx_availability_user_time on availability (user_id, start_time, end_time);
+create index idx_availability_org_time on availability (org_id, start_time, end_time);
+create index idx_availability_role on availability (role);
+create index idx_availability_matched on availability (matched);
+create index idx_availability_unmatched_time on availability (start_time, end_time) where matched = FALSE;
 
 -- Class indexes (critical for scheduling queries)
-CREATE INDEX idx_classes_course_id ON classes (course_id);
-CREATE INDEX idx_classes_org_id ON classes (org_id);
-CREATE INDEX idx_classes_start_time ON classes (start_time);
--- CREATE INDEX idx_classes_time_range ON classes(start_time, (start_time + INTERVAL '1 minute' * duration));
--- Note: Computed end time index removed due to PostgreSQL immutability requirements
-CREATE INDEX idx_classes_start_duration ON classes (start_time, duration);
-CREATE INDEX idx_classes_org_time ON classes (org_id, start_time);
+create index idx_classes_course_id on classes (course_id);
+create index idx_classes_org_id on classes (org_id);
+create index idx_classes_start_time on classes (start_time);
+create index idx_classes_time_range on classes (start_time, (start_time + INTERVAL '1 minute' * duration));
+create index idx_classes_org_time on classes (org_id, start_time);
 
 -- ClassParticipant indexes
-CREATE INDEX idx_class_participants_user_id ON class_participants (user_id);
-CREATE INDEX idx_class_participants_class_id ON class_participants (class_id);
-CREATE INDEX idx_class_participants_role ON class_participants (role);
-CREATE INDEX idx_class_participants_user_role ON class_participants (
-    user_id, role
-);
+create index idx_class_participants_user_id on class_participants (user_id);
+create index idx_class_participants_class_id on class_participants (class_id);
+create index idx_class_participants_role on class_participants (role);
+create index idx_class_participants_user_role on class_participants (user_id, role);
 
 -- ClassAttendance indexes
-CREATE INDEX idx_class_attendance_user_id ON class_attendance (user_id);
-CREATE INDEX idx_class_attendance_class_id ON class_attendance (class_id);
-CREATE INDEX idx_class_attendance_attended ON class_attendance (attended);
-CREATE INDEX idx_class_attendance_user_attended ON class_attendance (
-    user_id, attended
-);
+create index idx_class_attendance_user_id on class_attendance (user_id);
+create index idx_class_attendance_class_id on class_attendance (class_id);
+create index idx_class_attendance_attended on class_attendance (attended);
+create index idx_class_attendance_user_attended on class_attendance (user_id, attended);
 
 -- Tracker indexes
-CREATE INDEX idx_trackers_course_id ON trackers (course_id);
-CREATE INDEX idx_trackers_period ON trackers (period_start, period_end);
-CREATE INDEX idx_trackers_status ON trackers (status);
-CREATE INDEX idx_trackers_course_period ON trackers (
-    course_id, period_start, period_end
-);
+create index idx_trackers_course_id on trackers (course_id);
+create index idx_trackers_period on trackers (period_start, period_end);
+create index idx_trackers_status on trackers (status);
+create index idx_trackers_course_period on trackers (course_id, period_start, period_end);
 
 -- TrackerClass indexes
-CREATE INDEX idx_tracker_classes_tracking_id ON tracker_classes (tracking_id);
-CREATE INDEX idx_tracker_classes_class_id ON tracker_classes (class_id);
-CREATE INDEX idx_tracker_classes_status ON tracker_classes (status);
+create index idx_tracker_classes_tracking_id on tracker_classes (tracking_id);
+create index idx_tracker_classes_class_id on tracker_classes (class_id);
+create index idx_tracker_classes_status on tracker_classes (status);
 
 -- Composite indexes for common query patterns
-CREATE INDEX idx_users_org_role_name ON users (
-    org_id, role, first_name, last_name
-);
-CREATE INDEX idx_availability_search ON availability (
-    org_id, role, start_time, end_time, matched
-);
-CREATE INDEX idx_classes_search ON classes (org_id, start_time, duration);
-CREATE INDEX idx_class_participants_search ON class_participants (
-    user_id, role, class_id
-);
+create index idx_users_org_role_name on users (org_id, role, first_name, last_name);
+create index idx_availability_search on availability (org_id, role, start_time, end_time, matched);
+create index idx_classes_search on classes (org_id, start_time, duration);
+create index idx_class_participants_search on class_participants (user_id, role, class_id);
 
 -- Partial indexes for better performance on filtered queries
-CREATE INDEX idx_active_user_courses ON user_courses (
-    user_id, course_id
-) WHERE status
-= 'active';
--- CREATE INDEX idx_upcoming_classes ON classes(org_id, start_time) WHERE start_time > NOW();
--- Note: NOW() function index removed due to PostgreSQL immutability requirements
--- Query performance can be achieved with regular index on (org_id, start_time)
-CREATE INDEX idx_pending_attendance ON class_attendance (
-    class_id, user_id
-) WHERE attended IS NULL;
+create index idx_active_user_courses on user_courses (user_id, course_id) where status = 'active';
+create index idx_upcoming_classes on classes (org_id, start_time) where start_time > NOW();
+create index idx_pending_attendance on class_attendance (class_id, user_id) where attended is NULL;

@@ -1,7 +1,10 @@
 [sqlfluff]
 dialect = postgres
-max_line_length = 120
 templater = placeholder
+max_line_length = 120
+
+[sqlfluff:indentation]
+indent_unit = tab
 
 [sqlfluff:rules:layout.long_lines]
 ignore_comment_lines = true
@@ -10,12 +13,8 @@ ignore_comment_lines = true
 # Disable problematic spacing rules  
 LT01 = disabled
 
-[sqlfluff:indentation]
-indent_unit = tab
-
-[sqlfluff:rules:capitalisation:keywords]
+[sqlfluff:rules:capitalisation.keywords]
 capitalisation_policy = lower
 
 [sqlfluff:templater:placeholder]
 param_style = numeric_dollar
-
