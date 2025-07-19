@@ -3,9 +3,6 @@ dialect = postgres
 templater = placeholder
 max_line_length = 120
 
-[sqlfluff:indentation]
-indent_unit = tab
-
 [sqlfluff:rules:layout.long_lines]
 ignore_comment_lines = true
 
