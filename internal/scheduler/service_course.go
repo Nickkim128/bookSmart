@@ -23,11 +23,19 @@ func (s *Service) CreateCourse(c *gin.Context) {
 	// TODO: Implement course creation logic
 }
 
+//go:embed queries/course/get_course.sql
+var queryGetCourseSQL string
+
 func (s *Service) GetCourse(c *gin.Context, courseID string) {
-	// TODO: Implement course retrieval logic
+	course, err := getCourse(c.Request.Context(), s.pgxPool, courseID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, course)
 }
 
-//go:embed queries/list_courses.sql
+//go:embed queries/course/list_courses.sql
 var queryListCoursesSQL string
 
 func (s *Service) ListCourses(c *gin.Context) {
@@ -40,11 +48,16 @@ func (s *Service) ListCourses(c *gin.Context) {
 	c.JSON(http.StatusOK, courses)
 }
 
+func (s *Service) UpdateCourse(c *gin.Context, courseID string) {
+	// TODO: Implement course update logic
+}
+
 func listCourses(ctx context.Context, pgxPool *pgxpool.Pool, organizationID string) ([]Course, error) {
 	courses := []Course{}
 	return courses, pgxscan.Select(ctx, pgxPool, &courses, queryListCoursesSQL, organizationID)
 }
 
-func (s *Service) UpdateCourse(c *gin.Context, courseID string) {
-	// TODO: Implement course update logic
+func getCourse(ctx context.Context, pgxPool *pgxpool.Pool, courseID string) (Course, error) {
+	course := Course{}
+	return course, pgxscan.Get(ctx, pgxPool, &course, queryGetCourseSQL, courseID)
 }
