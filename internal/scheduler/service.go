@@ -1,16 +1,19 @@
 package scheduler
 
 import (
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
 
 type Service struct {
-	logger *zap.Logger
+	logger  *zap.Logger
+	pgxPool *pgxpool.Pool
 }
 
-func NewService(logger *zap.Logger) *Service {
+func NewService(logger *zap.Logger, pgxPool *pgxpool.Pool) *Service {
 	return &Service{
-		logger: logger,
+		logger:  logger,
+		pgxPool: pgxPool,
 	}
 }
 
