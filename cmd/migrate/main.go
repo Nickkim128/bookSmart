@@ -46,3 +46,4 @@ func main() {
 
 	log.Println("All migrations completed successfully!")
 }
+

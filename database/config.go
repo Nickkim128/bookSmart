@@ -119,7 +119,7 @@ func Migrate(db *sql.DB, migrationsDir string) error {
 			applied_at TIMESTAMPTZ DEFAULT NOW()
 		);
 	`
-	
+
 	if _, err := db.Exec(createMigrationsTable); err != nil {
 		return fmt.Errorf("failed to create migrations table: %w", err)
 	}
@@ -188,3 +188,4 @@ func getEnvOrDefault(key, defaultValue string) string {
 	}
 	return defaultValue
 }
+
