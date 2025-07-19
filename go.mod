@@ -1,4 +1,4 @@
-module github.com/nickkim128/bookSmart
+module scheduler-api
 
 go 1.24.5
 

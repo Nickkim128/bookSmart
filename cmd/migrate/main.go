@@ -5,7 +5,7 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/nickkim128/bookSmart/database"
+	"scheduler-api/database"
 )
 
 func main() {
