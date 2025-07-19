@@ -1,6 +1,6 @@
-SELECT
+select
 	course_id,
 	course_name,
 	course_description
-FROM courses
-WHERE org_id = $1;
+from courses
+where org_id = $1;
