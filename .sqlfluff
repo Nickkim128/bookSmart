@@ -1,0 +1,10 @@
+[sqlfluff]
+dialect = postgres
+max_line_length = 120
+
+[sqlfluff:rules:layout.long_lines]
+ignore_comment_lines = true
+
+[sqlfluff:rules:layout.spacing]
+# Disable problematic spacing rules  
+LT01 = disabled

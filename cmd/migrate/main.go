@@ -30,7 +30,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Printf("Failed to close database connection: %v", err)
+		}
+	}()
 
 	// Get absolute path for migrations directory
 	absPath, err := filepath.Abs(*migrationsDir)
@@ -46,4 +50,3 @@ func main() {
 
 	log.Println("All migrations completed successfully!")
 }
-

@@ -102,7 +102,9 @@ func Connect(config *Config) (*sql.DB, error) {
 	defer cancel()
 
 	if err := db.PingContext(ctx); err != nil {
-		db.Close()
+		if closeErr := db.Close(); closeErr != nil {
+			log.Printf("Failed to close database connection: %v", closeErr)
+		}
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
@@ -161,13 +163,17 @@ func Migrate(db *sql.DB, migrationsDir string) error {
 		}
 
 		if _, err := tx.Exec(string(migrationSQL)); err != nil {
-			tx.Rollback()
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				log.Printf("Failed to rollback transaction: %v", rollbackErr)
+			}
 			return fmt.Errorf("failed to execute migration %s: %w", migration.version, err)
 		}
 
 		// Record migration as applied
 		if _, err := tx.Exec("INSERT INTO schema_migrations (version) VALUES ($1)", migration.version); err != nil {
-			tx.Rollback()
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				log.Printf("Failed to rollback transaction: %v", rollbackErr)
+			}
 			return fmt.Errorf("failed to record migration %s: %w", migration.version, err)
 		}
 
@@ -188,4 +194,3 @@ func getEnvOrDefault(key, defaultValue string) string {
 	}
 	return defaultValue
 }
-
