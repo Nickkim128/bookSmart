@@ -6,6 +6,7 @@ import (
 
 	"scheduler-api/internal/scheduler"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
@@ -29,6 +30,10 @@ func initPostgres(log *zap.Logger) (*pgxpool.Pool, error) {
 
 func main() {
 	r := gin.Default()
+
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	r.Use(cors.New(config))
 
 	log, err := zap.NewProduction()
 	if err != nil {
