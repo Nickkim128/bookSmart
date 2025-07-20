@@ -3,9 +3,12 @@ package main
 import (
 	"context"
 	"os"
+	"strings"
+	"time"
 
 	"scheduler-api/internal/scheduler"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
@@ -29,6 +32,45 @@ func initPostgres(log *zap.Logger) (*pgxpool.Pool, error) {
 
 func main() {
 	r := gin.Default()
+
+	// Configure CORS
+	config := cors.DefaultConfig()
+
+	// Get allowed origins from environment variable or use defaults
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+	if allowedOrigins == "" {
+		// Default origins for development
+		config.AllowOrigins = []string{
+			"http://localhost:3000",
+			"http://localhost:8080",
+			"http://127.0.0.1:3000",
+			"http://127.0.0.1:8080",
+		}
+	} else {
+		// Parse comma-separated origins from environment variable
+		origins := strings.Split(allowedOrigins, ",")
+		for i, origin := range origins {
+			origins[i] = strings.TrimSpace(origin)
+		}
+		config.AllowOrigins = origins
+	}
+
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}
+	config.AllowHeaders = []string{
+		"Origin",
+		"Content-Length",
+		"Content-Type",
+		"Authorization",
+		"X-Requested-With",
+		"Accept",
+		"Cache-Control",
+		"X-CSRF-Token",
+	}
+	config.AllowCredentials = true
+	config.MaxAge = 12 * time.Hour
+
+	// Apply CORS middleware
+	r.Use(cors.New(config))
 
 	log, err := zap.NewProduction()
 	if err != nil {
