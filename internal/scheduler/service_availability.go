@@ -1,7 +1,14 @@
 package scheduler
 
 import (
+	"context"
+	_ "embed"
+	"net/http"
+	"time"
+
+	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type AvailabilityService interface {
@@ -13,6 +20,13 @@ type AvailabilityService interface {
 
 var _ AvailabilityService = (*Service)(nil)
 
+type AvailabilityRecord struct {
+	AvailabilityID string    `json:"availability_id"`
+	UserID         string    `json:"user_id"`
+	StartTime      time.Time `json:"start_time"`
+	EndTime        time.Time `json:"end_time"`
+}
+
 func (s *Service) CreateAvailability(c *gin.Context, userID string) {
 	// TODO: Implement availability creation logic
 	// - Get user ID from context
@@ -21,11 +35,28 @@ func (s *Service) CreateAvailability(c *gin.Context, userID string) {
 	// - Return created availability
 }
 
+//go:embed queries/availibility/get_availibility.sql
+var queryGetAvailabilitySQL string
+
 func (s *Service) GetAvailability(c *gin.Context, userID string) {
-	// TODO: Implement availability retrieval logic
-	// - Get user ID from context
-	// - Query database for availability
-	// - Return availability record
+	availabilityRecords, err := getAvailability(c.Request.Context(), s.pgxPool, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	availabileTimeIntervals := make([]TimeInterval, len(availabilityRecords))
+	for i, availability := range availabilityRecords {
+		availabileTimeIntervals[i] = TimeInterval{
+			availability.StartTime,
+			availability.EndTime,
+		}
+	}
+
+	c.JSON(http.StatusOK, Availability{
+		AvailableTimeIntervals: availabileTimeIntervals,
+		UserId:                 userID,
+	})
 }
 
 func (s *Service) UpdateAvailability(c *gin.Context, userID string) {
@@ -42,4 +73,9 @@ func (s *Service) GetBatchAvailability(c *gin.Context) {
 	// TODO: Implement batch availability retrieval logic
 	// - Query database for multiple users' availability
 	// - Return array of availability records
+}
+
+func getAvailability(ctx context.Context, pgxPool *pgxpool.Pool, userID string) ([]AvailabilityRecord, error) {
+	availability := []AvailabilityRecord{}
+	return availability, pgxscan.Select(ctx, pgxPool, &availability, queryGetAvailabilitySQL, userID)
 }
