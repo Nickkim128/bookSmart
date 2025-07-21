@@ -21,61 +21,61 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Get availability for multiple users (batch)
-	// (GET /v1/availability)
+	// (GET /v1/availability/)
 	GetBatchAvailability(c *gin.Context)
 	// Create a new class
-	// (POST /v1/class)
+	// (POST /v1/class/)
 	CreateClass(c *gin.Context)
 	// List classes for a course
-	// (GET /v1/class/course/{course_id})
+	// (GET /v1/class/course/{course_id}/)
 	ListCourseClasses(c *gin.Context, courseId string)
 	// List classes for a user
-	// (GET /v1/class/user/{user_id})
+	// (GET /v1/class/user/{user_id}/)
 	ListUserClasses(c *gin.Context, userId string)
 	// Get all courses
-	// (GET /v1/course)
+	// (GET /v1/course/)
 	ListCourses(c *gin.Context)
 	// Create a new course
-	// (POST /v1/course)
+	// (POST /v1/course/)
 	CreateCourse(c *gin.Context)
 	// Get a course by ID
-	// (GET /v1/course/{course_id})
+	// (GET /v1/course/{course_id}/)
 	GetCourse(c *gin.Context, courseId string)
 	// Update a course
-	// (POST /v1/course/{course_id})
+	// (POST /v1/course/{course_id}/)
 	UpdateCourse(c *gin.Context, courseId string)
 	// Delete an organization
-	// (DELETE /v1/org/{org_id})
+	// (DELETE /v1/org/{org_id}/)
 	DeleteOrg(c *gin.Context, orgId string)
 	// Create a new organization
-	// (POST /v1/org/{org_id})
+	// (POST /v1/org/{org_id}/)
 	CreateOrg(c *gin.Context, orgId string)
 	// Get trackers for a course
-	// (GET /v1/trackers/course)
+	// (GET /v1/trackers/course/)
 	GetTrackers(c *gin.Context)
 	// Get all users
-	// (GET /v1/user)
+	// (GET /v1/user/)
 	ListUsers(c *gin.Context)
 	// Delete a user
-	// (DELETE /v1/user/{user_id})
+	// (DELETE /v1/user/{user_id}/)
 	DeleteUser(c *gin.Context, userId string)
 	// Get a user by ID
-	// (GET /v1/user/{user_id})
+	// (GET /v1/user/{user_id}/)
 	GetUser(c *gin.Context, userId string)
 	// Update a user
-	// (PATCH /v1/user/{user_id})
+	// (PATCH /v1/user/{user_id}/)
 	UpdateUser(c *gin.Context, userId string)
 	// Create a new user
-	// (POST /v1/user/{user_id})
+	// (POST /v1/user/{user_id}/)
 	CreateUser(c *gin.Context, userId string)
 	// Get availability for a user
-	// (GET /v1/user/{user_id}/availability)
+	// (GET /v1/user/{user_id}/availability/)
 	GetAvailability(c *gin.Context, userId string)
 	// Update availability for a user
-	// (PATCH /v1/user/{user_id}/availability)
+	// (PATCH /v1/user/{user_id}/availability/)
 	UpdateAvailability(c *gin.Context, userId string)
 	// Create availability for a user
-	// (POST /v1/user/{user_id}/availability)
+	// (POST /v1/user/{user_id}/availability/)
 	CreateAvailability(c *gin.Context, userId string)
 }
 
@@ -505,58 +505,58 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 		ErrorHandler:       errorHandler,
 	}
 
-	router.GET(options.BaseURL+"/v1/availability", wrapper.GetBatchAvailability)
-	router.POST(options.BaseURL+"/v1/class", wrapper.CreateClass)
-	router.GET(options.BaseURL+"/v1/class/course/:course_id", wrapper.ListCourseClasses)
-	router.GET(options.BaseURL+"/v1/class/user/:user_id", wrapper.ListUserClasses)
-	router.GET(options.BaseURL+"/v1/course", wrapper.ListCourses)
-	router.POST(options.BaseURL+"/v1/course", wrapper.CreateCourse)
-	router.GET(options.BaseURL+"/v1/course/:course_id", wrapper.GetCourse)
-	router.POST(options.BaseURL+"/v1/course/:course_id", wrapper.UpdateCourse)
-	router.DELETE(options.BaseURL+"/v1/org/:org_id", wrapper.DeleteOrg)
-	router.POST(options.BaseURL+"/v1/org/:org_id", wrapper.CreateOrg)
-	router.GET(options.BaseURL+"/v1/trackers/course", wrapper.GetTrackers)
-	router.GET(options.BaseURL+"/v1/user", wrapper.ListUsers)
-	router.DELETE(options.BaseURL+"/v1/user/:user_id", wrapper.DeleteUser)
-	router.GET(options.BaseURL+"/v1/user/:user_id", wrapper.GetUser)
-	router.PATCH(options.BaseURL+"/v1/user/:user_id", wrapper.UpdateUser)
-	router.POST(options.BaseURL+"/v1/user/:user_id", wrapper.CreateUser)
-	router.GET(options.BaseURL+"/v1/user/:user_id/availability", wrapper.GetAvailability)
-	router.PATCH(options.BaseURL+"/v1/user/:user_id/availability", wrapper.UpdateAvailability)
-	router.POST(options.BaseURL+"/v1/user/:user_id/availability", wrapper.CreateAvailability)
+	router.GET(options.BaseURL+"/v1/availability/", wrapper.GetBatchAvailability)
+	router.POST(options.BaseURL+"/v1/class/", wrapper.CreateClass)
+	router.GET(options.BaseURL+"/v1/class/course/:course_id/", wrapper.ListCourseClasses)
+	router.GET(options.BaseURL+"/v1/class/user/:user_id/", wrapper.ListUserClasses)
+	router.GET(options.BaseURL+"/v1/course/", wrapper.ListCourses)
+	router.POST(options.BaseURL+"/v1/course/", wrapper.CreateCourse)
+	router.GET(options.BaseURL+"/v1/course/:course_id/", wrapper.GetCourse)
+	router.POST(options.BaseURL+"/v1/course/:course_id/", wrapper.UpdateCourse)
+	router.DELETE(options.BaseURL+"/v1/org/:org_id/", wrapper.DeleteOrg)
+	router.POST(options.BaseURL+"/v1/org/:org_id/", wrapper.CreateOrg)
+	router.GET(options.BaseURL+"/v1/trackers/course/", wrapper.GetTrackers)
+	router.GET(options.BaseURL+"/v1/user/", wrapper.ListUsers)
+	router.DELETE(options.BaseURL+"/v1/user/:user_id/", wrapper.DeleteUser)
+	router.GET(options.BaseURL+"/v1/user/:user_id/", wrapper.GetUser)
+	router.PATCH(options.BaseURL+"/v1/user/:user_id/", wrapper.UpdateUser)
+	router.POST(options.BaseURL+"/v1/user/:user_id/", wrapper.CreateUser)
+	router.GET(options.BaseURL+"/v1/user/:user_id/availability/", wrapper.GetAvailability)
+	router.PATCH(options.BaseURL+"/v1/user/:user_id/availability/", wrapper.UpdateAvailability)
+	router.POST(options.BaseURL+"/v1/user/:user_id/availability/", wrapper.CreateAvailability)
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"vL/f/xkAAP//KWgvA0ErAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

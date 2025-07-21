@@ -96,11 +96,6 @@ type Course struct {
 // CourseInterval defines model for Course.Interval.
 type CourseInterval string
 
-// CourseClassesRequest defines model for CourseClassesRequest.
-type CourseClassesRequest struct {
-	CourseId string `json:"course_id"`
-}
-
 // CourseParticipantChanges defines model for CourseParticipantChanges.
 type CourseParticipantChanges struct {
 	Add    *[]string `json:"add,omitempty"`
@@ -168,11 +163,6 @@ type User struct {
 // UserRole defines model for User.Role.
 type UserRole string
 
-// UserClassesRequest defines model for UserClassesRequest.
-type UserClassesRequest struct {
-	UserId string `json:"user_id"`
-}
-
 // UserUpdate defines model for UserUpdate.
 type UserUpdate struct {
 	Email       *openapi_types.Email `json:"email,omitempty"`
@@ -190,12 +180,6 @@ type GetBatchAvailabilityJSONRequestBody = BatchAvailabilityRequest
 
 // CreateClassJSONRequestBody defines body for CreateClass for application/json ContentType.
 type CreateClassJSONRequestBody = Class
-
-// ListCourseClassesJSONRequestBody defines body for ListCourseClasses for application/json ContentType.
-type ListCourseClassesJSONRequestBody = CourseClassesRequest
-
-// ListUserClassesJSONRequestBody defines body for ListUserClasses for application/json ContentType.
-type ListUserClassesJSONRequestBody = UserClassesRequest
 
 // CreateCourseJSONRequestBody defines body for CreateCourse for application/json ContentType.
 type CreateCourseJSONRequestBody = Course
