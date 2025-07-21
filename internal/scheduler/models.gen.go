@@ -74,10 +74,10 @@ type Class struct {
 	CourseId *string `json:"course_id,omitempty"`
 
 	// Duration Duration in minutes
-	Duration int       `json:"duration"`
-	Start    time.Time `json:"start"`
-	Students []string  `json:"students"`
-	Teachers []string  `json:"teachers"`
+	Duration  int       `json:"duration"`
+	StartTime time.Time `json:"start_time"`
+	Students  []string  `json:"students"`
+	Teachers  []string  `json:"teachers"`
 }
 
 // Course defines model for Course.

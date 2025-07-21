@@ -185,7 +185,7 @@ components:
       type: object
       required:
         - class_id
-        - start
+        - start_time
         - duration
         - students
         - teachers
@@ -194,7 +194,7 @@ components:
           type: string
         course_id:
           type: string
-        start:
+        start_time:
           type: string
           format: date-time
         duration:
@@ -594,11 +594,17 @@ paths:
         "400":
           description: Bad request
 
-  /v1/class/user:
+  /v1/class/user/{user_id}:
     get:
       summary: List classes for a user
       operationId: listUserClasses
       tags: [Class]
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -615,11 +621,17 @@ paths:
                 items:
                   $ref: "#/components/schemas/Class"
 
-  /v1/class/course:
+  /v1/class/course/{course_id}:
     get:
       summary: List classes for a course
       operationId: listCourseClasses
       tags: [Class]
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
