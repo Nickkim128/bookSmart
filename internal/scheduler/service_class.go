@@ -23,7 +23,6 @@ func (s *Service) CreateClass(c *gin.Context) {
 }
 
 func (s *Service) ListUserClasses(c *gin.Context, userID string) {
-	userID = "10000000-0000-0000-0000-000000000005"
 	classes, err := listUserClasses(c.Request.Context(), s.pgxPool, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
