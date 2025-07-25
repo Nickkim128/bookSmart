@@ -33,16 +33,16 @@ const (
 
 // Defines values for UserRole.
 const (
-	UserRoleAdmin   UserRole = "Admin"
-	UserRoleStudent UserRole = "Student"
-	UserRoleTutor   UserRole = "Tutor"
+	UserRoleAdmin   UserRole = "admin"
+	UserRoleStudent UserRole = "student"
+	UserRoleTutor   UserRole = "tutor"
 )
 
 // Defines values for UserUpdateRole.
 const (
-	UserUpdateRoleAdmin   UserUpdateRole = "Admin"
-	UserUpdateRoleStudent UserUpdateRole = "Student"
-	UserUpdateRoleTutor   UserUpdateRole = "Tutor"
+	UserUpdateRoleAdmin   UserUpdateRole = "admin"
+	UserUpdateRoleStudent UserUpdateRole = "student"
+	UserUpdateRoleTutor   UserUpdateRole = "tutor"
 )
 
 // Availability defines model for Availability.
