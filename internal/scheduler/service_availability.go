@@ -84,7 +84,7 @@ func (s *Service) GetAvailability(c *gin.Context, userID string) {
 			availability.EndTime,
 		}
 	}
-	
+
 	// Group consecutive chunks back into larger intervals
 	availabileTimeIntervals := groupConsecutiveChunks(chunks)
 
@@ -105,9 +105,39 @@ func (s *Service) UpdateAvailability(c *gin.Context, userID string) {
 }
 
 func (s *Service) GetBatchAvailability(c *gin.Context) {
-	// TODO: Implement batch availability retrieval logic
-	// - Query database for multiple users' availability
-	// - Return array of availability records
+	request := BatchAvailabilityRequest{}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := []Availability{}
+	for _, userID := range request.UserIds {
+		availabilityRecords, err := getAvailability(c.Request.Context(), s.pgxPool, userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Convert records to TimeInterval chunks
+		chunks := make([]TimeInterval, len(availabilityRecords))
+		for i, availability := range availabilityRecords {
+			chunks[i] = TimeInterval{
+				availability.StartTime,
+				availability.EndTime,
+			}
+		}
+
+		// Group consecutive chunks back into larger intervals
+		availableTimeIntervals := groupConsecutiveChunks(chunks)
+
+		response = append(response, Availability{
+			AvailableTimeIntervals: availableTimeIntervals,
+			UserId:                 userID,
+		})
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func getAvailability(ctx context.Context, pgxPool *pgxpool.Pool, userID string) ([]AvailabilityRecord, error) {

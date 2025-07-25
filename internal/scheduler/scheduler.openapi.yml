@@ -485,7 +485,14 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Availability"
+                  type: object
+                  properties:
+                    user_id:
+                      type: string
+                    available_time_intervals:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/TimeInterval"
 
   /v1/course/:
     post:
