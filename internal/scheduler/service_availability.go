@@ -8,6 +8,8 @@ import (
 
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,15 +30,44 @@ type AvailabilityRecord struct {
 }
 
 func (s *Service) CreateAvailability(c *gin.Context, userID string) {
-	// TODO: Implement availability creation logic
-	// - Get user ID from context
-	// - Validate request body
-	// - Create availability record
-	// - Return created availability
+	availabilityRequest := Availability{}
+	if err := c.ShouldBindJSON(&availabilityRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var (
+		orgID   = "00000000-0000-0000-0000-000000000001"
+		role    = UserRoleStudent
+		matched = false
+		now     = time.Now()
+	)
+
+	chunks, err := convertIntervalsIntoChunks(availabilityRequest.AvailableTimeIntervals)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(chunks) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "no valid time intervals provided"})
+		return
+	}
+
+	err = batchUpsertAvailability(c.Request.Context(), s.pgxPool, userID, orgID, role, matched, now, chunks)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Availability created successfully"})
 }
 
 //go:embed queries/availibility/get_availibility.sql
 var queryGetAvailabilitySQL string
+
+//go:embed queries/availibility/batch_upsert_availability.sql
+var queryBatchUpsertAvailabilitySQL string
 
 func (s *Service) GetAvailability(c *gin.Context, userID string) {
 	availabilityRecords, err := getAvailability(c.Request.Context(), s.pgxPool, userID)
@@ -79,3 +110,63 @@ func getAvailability(ctx context.Context, pgxPool *pgxpool.Pool, userID string) 
 	availability := []AvailabilityRecord{}
 	return availability, pgxscan.Select(ctx, pgxPool, &availability, queryGetAvailabilitySQL, userID)
 }
+
+func batchUpsertAvailability(ctx context.Context, pgxPool *pgxpool.Pool, userID, orgID string, role UserRole, matched bool, now time.Time, chunks []TimeInterval) error {
+	batch := &pgx.Batch{}
+
+	for _, interval := range chunks {
+		availabilityID := uuid.New().String()
+		batch.Queue(queryBatchUpsertAvailabilitySQL,
+			availabilityID,
+			orgID,
+			userID,
+			role,
+			interval[0],
+			interval[1],
+			matched,
+			now,
+			now,
+		)
+	}
+
+	batchResult := pgxPool.SendBatch(ctx, batch)
+	defer func() {
+		_ = batchResult.Close()
+	}()
+
+	for i := 0; i < len(chunks); i++ {
+		_, err := batchResult.Exec()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// type additionalAvailabilityRecord struct {
+// 	OrgID     string    `json:"org_id"`
+// 	Role      string    `json:"role"`
+// 	Matched   bool      `json:"matched"`
+// 	CreatedAt time.Time `json:"created_at"`
+// 	UpdatedAt time.Time `json:"updated_at"`
+// }
+
+// //go:embed queries/availibility/create_availibility.sql
+// var queryCreateAvailabilitySQL string
+
+// func createAvailability(ctx context.Context, pgxPool *pgxpool.Pool, availability AvailabilityRecord, additionalAvailability additionalAvailabilityRecord) error {
+// 	_, err := pgxPool.Exec(ctx,
+// 		queryCreateAvailabilitySQL,
+// 		availability.AvailabilityID,
+// 		additionalAvailability.OrgID,
+// 		availability.UserID,
+// 		additionalAvailability.Role,
+// 		availability.StartTime,
+// 		availability.EndTime,
+// 		additionalAvailability.Matched,
+// 		additionalAvailability.CreatedAt,
+// 		additionalAvailability.UpdatedAt,
+// 	)
+// 	return err
+// }

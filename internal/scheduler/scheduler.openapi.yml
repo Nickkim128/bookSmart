@@ -41,7 +41,7 @@ components:
           type: string
         role:
           type: string
-          enum: [Admin, Student, Tutor]
+          enum: [admin, student, tutor]
         email:
           type: string
           format: email
@@ -61,7 +61,7 @@ components:
           type: string
         role:
           type: string
-          enum: [Admin, Student, Tutor]
+          enum: [admin, student, tutor]
         email:
           type: string
           format: email
