@@ -467,7 +467,7 @@ paths:
           description: User not found
 
   /v1/availability/:
-    get:
+    post:
       summary: Get availability for multiple users (batch)
       operationId: getBatchAvailability
       tags: [Availability]
