@@ -86,10 +86,10 @@ func (s *Service) GetAvailability(c *gin.Context, userID string) {
 	}
 
 	// Group consecutive chunks back into larger intervals
-	availabileTimeIntervals := groupConsecutiveChunks(chunks)
+	availableTimeIntervals := groupConsecutiveChunks(chunks)
 
 	c.JSON(http.StatusOK, Availability{
-		AvailableTimeIntervals: availabileTimeIntervals,
+		AvailableTimeIntervals: availableTimeIntervals,
 		UserId:                 userID,
 	})
 }
