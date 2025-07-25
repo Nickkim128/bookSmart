@@ -174,3 +174,141 @@ func TestConvertIntervalsIntoChunks(t *testing.T) {
 		})
 	}
 }
+
+func TestGroupConsecutiveChunks(t *testing.T) {
+	tests := []struct {
+		name     string
+		chunks   []TimeInterval
+		expected []TimeInterval
+	}{
+		{
+			name: "consecutive 15-minute chunks",
+			chunks: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 9, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 15, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 9, 15, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 30, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 9, 30, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 45, 0, 0, time.UTC),
+				},
+			},
+			expected: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 9, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 45, 0, 0, time.UTC),
+				},
+			},
+		},
+		{
+			name: "non-consecutive chunks with gap",
+			chunks: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 9, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 15, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 9, 15, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 30, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 14, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 14, 15, 0, 0, time.UTC),
+				},
+			},
+			expected: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 9, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 30, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 14, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 14, 15, 0, 0, time.UTC),
+				},
+			},
+		},
+		{
+			name: "single chunk",
+			chunks: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 9, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 15, 0, 0, time.UTC),
+				},
+			},
+			expected: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 9, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 15, 0, 0, time.UTC),
+				},
+			},
+		},
+		{
+			name: "multiple separate groups",
+			chunks: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 9, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 15, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 9, 15, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 30, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 14, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 14, 15, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 14, 15, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 14, 30, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 14, 30, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 14, 45, 0, 0, time.UTC),
+				},
+			},
+			expected: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 9, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 9, 30, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 14, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 14, 45, 0, 0, time.UTC),
+				},
+			},
+		},
+		{
+			name:     "empty chunks",
+			chunks:   []TimeInterval{},
+			expected: []TimeInterval{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := groupConsecutiveChunks(tt.chunks)
+			
+			if len(result) != len(tt.expected) {
+				t.Errorf("expected %d intervals, got %d", len(tt.expected), len(result))
+				return
+			}
+			
+			for i, interval := range result {
+				if len(interval) != 2 {
+					t.Errorf("interval %d should have 2 times, got %d", i, len(interval))
+					continue
+				}
+				
+				expectedInterval := tt.expected[i]
+				if !interval[0].Equal(expectedInterval[0]) || !interval[1].Equal(expectedInterval[1]) {
+					t.Errorf("interval %d: expected [%v, %v], got [%v, %v]",
+						i, expectedInterval[0], expectedInterval[1], interval[0], interval[1])
+				}
+			}
+		})
+	}
+}

@@ -36,3 +36,35 @@ func convertIntervalsIntoChunks(intervals []TimeInterval) ([]TimeInterval, error
 
 	return chunks, nil
 }
+
+func groupConsecutiveChunks(chunks []TimeInterval) []TimeInterval {
+	if len(chunks) == 0 {
+		return []TimeInterval{}
+	}
+	
+	var grouped []TimeInterval
+	
+	start := chunks[0][0]
+	end := chunks[0][1]
+	
+	for i := 1; i < len(chunks); i++ {
+		currentStart := chunks[i][0]
+		currentEnd := chunks[i][1]
+		
+		// Check if current chunk is consecutive (starts exactly when previous ended)
+		if currentStart.Equal(end) {
+			// Extend the current interval
+			end = currentEnd
+		} else {
+			// Gap found, save current interval and start a new one
+			grouped = append(grouped, TimeInterval{start, end})
+			start = currentStart
+			end = currentEnd
+		}
+	}
+	
+	// Add the final interval
+	grouped = append(grouped, TimeInterval{start, end})
+	
+	return grouped
+}
