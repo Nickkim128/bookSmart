@@ -4,4 +4,5 @@ select
 	start_time,
 	end_time
 from availability
-where user_id = $1;
+where user_id = $1
+order by start_time;

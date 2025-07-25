@@ -76,13 +76,17 @@ func (s *Service) GetAvailability(c *gin.Context, userID string) {
 		return
 	}
 
-	availabileTimeIntervals := make([]TimeInterval, len(availabilityRecords))
+	// Convert records to TimeInterval chunks
+	chunks := make([]TimeInterval, len(availabilityRecords))
 	for i, availability := range availabilityRecords {
-		availabileTimeIntervals[i] = TimeInterval{
+		chunks[i] = TimeInterval{
 			availability.StartTime,
 			availability.EndTime,
 		}
 	}
+	
+	// Group consecutive chunks back into larger intervals
+	availabileTimeIntervals := groupConsecutiveChunks(chunks)
 
 	c.JSON(http.StatusOK, Availability{
 		AvailableTimeIntervals: availabileTimeIntervals,
