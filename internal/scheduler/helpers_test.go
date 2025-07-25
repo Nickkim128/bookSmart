@@ -141,30 +141,30 @@ func TestConvertIntervalsIntoChunks(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := convertIntervalsIntoChunks(tt.intervals)
-			
+
 			if tt.expectError {
 				if err == nil {
 					t.Errorf("expected error but got none")
 				}
 				return
 			}
-			
+
 			if err != nil {
 				t.Errorf("unexpected error: %v", err)
 				return
 			}
-			
+
 			if len(result) != len(tt.expected) {
 				t.Errorf("expected %d chunks, got %d", len(tt.expected), len(result))
 				return
 			}
-			
+
 			for i, chunk := range result {
 				if len(chunk) != 2 {
 					t.Errorf("chunk %d should have 2 times, got %d", i, len(chunk))
 					continue
 				}
-				
+
 				expectedChunk := tt.expected[i]
 				if !chunk[0].Equal(expectedChunk[0]) || !chunk[1].Equal(expectedChunk[1]) {
 					t.Errorf("chunk %d: expected [%v, %v], got [%v, %v]",
@@ -286,23 +286,61 @@ func TestGroupConsecutiveChunks(t *testing.T) {
 			chunks:   []TimeInterval{},
 			expected: []TimeInterval{},
 		},
+		{
+			name: "overlapping chunks",
+			chunks: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 10, 15, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 10, 30, 0, 0, time.UTC),
+				},
+			},
+			expected: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 10, 30, 0, 0, time.UTC),
+				},
+			},
+		},
+		{
+			name: "overlapping chunks in different order",
+			chunks: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 10, 30, 0, 0, time.UTC),
+				},
+				{
+					time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 10, 15, 0, 0, time.UTC),
+				},
+			},
+			expected: []TimeInterval{
+				{
+					time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC),
+					time.Date(2023, 1, 1, 10, 30, 0, 0, time.UTC),
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := groupConsecutiveChunks(tt.chunks)
-			
+
 			if len(result) != len(tt.expected) {
 				t.Errorf("expected %d intervals, got %d", len(tt.expected), len(result))
 				return
 			}
-			
+
 			for i, interval := range result {
 				if len(interval) != 2 {
 					t.Errorf("interval %d should have 2 times, got %d", i, len(interval))
 					continue
 				}
-				
+
 				expectedInterval := tt.expected[i]
 				if !interval[0].Equal(expectedInterval[0]) || !interval[1].Equal(expectedInterval[1]) {
 					t.Errorf("interval %d: expected [%v, %v], got [%v, %v]",
