@@ -91,6 +91,8 @@ type MiddlewareFunc func(c *gin.Context)
 // GetBatchAvailability operation middleware
 func (siw *ServerInterfaceWrapper) GetBatchAvailability(c *gin.Context) {
 
+	c.Set(FirebaseAuthScopes, []string{})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -103,6 +105,8 @@ func (siw *ServerInterfaceWrapper) GetBatchAvailability(c *gin.Context) {
 
 // CreateClass operation middleware
 func (siw *ServerInterfaceWrapper) CreateClass(c *gin.Context) {
+
+	c.Set(FirebaseAuthScopes, []string{})
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -117,6 +121,8 @@ func (siw *ServerInterfaceWrapper) CreateClass(c *gin.Context) {
 // ListCourseClasses operation middleware
 func (siw *ServerInterfaceWrapper) ListCourseClasses(c *gin.Context) {
 
+	c.Set(FirebaseAuthScopes, []string{})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -129,6 +135,8 @@ func (siw *ServerInterfaceWrapper) ListCourseClasses(c *gin.Context) {
 
 // ListUserClasses operation middleware
 func (siw *ServerInterfaceWrapper) ListUserClasses(c *gin.Context) {
+
+	c.Set(FirebaseAuthScopes, []string{})
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -143,6 +151,8 @@ func (siw *ServerInterfaceWrapper) ListUserClasses(c *gin.Context) {
 // ListCourses operation middleware
 func (siw *ServerInterfaceWrapper) ListCourses(c *gin.Context) {
 
+	c.Set(FirebaseAuthScopes, []string{})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -155,6 +165,8 @@ func (siw *ServerInterfaceWrapper) ListCourses(c *gin.Context) {
 
 // CreateCourse operation middleware
 func (siw *ServerInterfaceWrapper) CreateCourse(c *gin.Context) {
+
+	c.Set(FirebaseAuthScopes, []string{})
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -180,6 +192,8 @@ func (siw *ServerInterfaceWrapper) GetCourse(c *gin.Context) {
 		return
 	}
 
+	c.Set(FirebaseAuthScopes, []string{})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -203,6 +217,8 @@ func (siw *ServerInterfaceWrapper) UpdateCourse(c *gin.Context) {
 		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter course_id: %w", err), http.StatusBadRequest)
 		return
 	}
+
+	c.Set(FirebaseAuthScopes, []string{})
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -228,6 +244,8 @@ func (siw *ServerInterfaceWrapper) DeleteOrg(c *gin.Context) {
 		return
 	}
 
+	c.Set(FirebaseAuthScopes, []string{})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -252,6 +270,8 @@ func (siw *ServerInterfaceWrapper) CreateOrg(c *gin.Context) {
 		return
 	}
 
+	c.Set(FirebaseAuthScopes, []string{})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -265,6 +285,8 @@ func (siw *ServerInterfaceWrapper) CreateOrg(c *gin.Context) {
 // GetTrackers operation middleware
 func (siw *ServerInterfaceWrapper) GetTrackers(c *gin.Context) {
 
+	c.Set(FirebaseAuthScopes, []string{})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -277,6 +299,8 @@ func (siw *ServerInterfaceWrapper) GetTrackers(c *gin.Context) {
 
 // ListUsers operation middleware
 func (siw *ServerInterfaceWrapper) ListUsers(c *gin.Context) {
+
+	c.Set(FirebaseAuthScopes, []string{})
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -302,6 +326,8 @@ func (siw *ServerInterfaceWrapper) DeleteUser(c *gin.Context) {
 		return
 	}
 
+	c.Set(FirebaseAuthScopes, []string{})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -325,6 +351,8 @@ func (siw *ServerInterfaceWrapper) GetUser(c *gin.Context) {
 		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter user_id: %w", err), http.StatusBadRequest)
 		return
 	}
+
+	c.Set(FirebaseAuthScopes, []string{})
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -350,6 +378,8 @@ func (siw *ServerInterfaceWrapper) UpdateUser(c *gin.Context) {
 		return
 	}
 
+	c.Set(FirebaseAuthScopes, []string{})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -373,6 +403,8 @@ func (siw *ServerInterfaceWrapper) CreateUser(c *gin.Context) {
 		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter user_id: %w", err), http.StatusBadRequest)
 		return
 	}
+
+	c.Set(FirebaseAuthScopes, []string{})
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -398,6 +430,8 @@ func (siw *ServerInterfaceWrapper) GetAvailability(c *gin.Context) {
 		return
 	}
 
+	c.Set(FirebaseAuthScopes, []string{})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -421,6 +455,8 @@ func (siw *ServerInterfaceWrapper) UpdateAvailability(c *gin.Context) {
 		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter user_id: %w", err), http.StatusBadRequest)
 		return
 	}
+
+	c.Set(FirebaseAuthScopes, []string{})
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -446,6 +482,8 @@ func (siw *ServerInterfaceWrapper) CreateAvailability(c *gin.Context) {
 		return
 	}
 
+	c.Set(FirebaseAuthScopes, []string{})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -462,7 +500,7 @@ type GinServerOptions struct {
 	Middlewares  []MiddlewareFunc
 	ErrorHandler func(*gin.Context, error, int)
 }
-
+	
 // RegisterHandlers creates http.Handler with routing matching OpenAPI spec.
 func RegisterHandlers(router gin.IRouter, si ServerInterface) {
 	RegisterHandlersWithOptions(router, si, GinServerOptions{})
@@ -507,34 +545,35 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"AAAA//9hUbvmNiwAAA==",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

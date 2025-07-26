@@ -49,6 +49,11 @@ pids
 .env.test.local
 .env.production.local
 
+# Firebase service account (NEVER commit these!)
+firebase-service-account.json
+*firebase-adminsdk*.json
+service-account*.json
+
 # Temporary folders
 tmp/
 temp/
