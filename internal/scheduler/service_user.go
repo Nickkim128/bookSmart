@@ -291,8 +291,9 @@ func (s *Service) UpdateUser(c *gin.Context, userID string) {
 		return
 	}
 
-	// Validate role if provided
+	// Validate role if provided and check authorization
 	if req.Role != "" {
+		// Check if role is valid
 		validRoles := []string{"admin", "student", "tutor"}
 		isValidRole := false
 		for _, role := range validRoles {
@@ -308,6 +309,66 @@ func (s *Service) UpdateUser(c *gin.Context, userID string) {
 			})
 			return
 		}
+
+		// Security check: Only admins can change roles
+		if currentUser.Role != "admin" {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error":   "forbidden",
+				"message": "Admin access required to change user roles",
+			})
+			return
+		}
+
+		// Prevent users from changing their own role
+		if currentUser.UserID == userID {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error":   "forbidden",
+				"message": "Cannot change your own role",
+			})
+			return
+		}
+
+		// Get current user role from database to check if they're the last admin
+		var currentUserRole string
+		err := s.sqlDB.QueryRow("SELECT role FROM users WHERE user_id = $1", userID).Scan(&currentUserRole)
+		if err != nil {
+			s.logger.Error("Failed to get current user role", zap.Error(err))
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error":   "database_error",
+				"message": "Failed to validate role change",
+			})
+			return
+		}
+
+		// If demoting an admin, ensure at least one admin will remain
+		if currentUserRole == "admin" && req.Role != "admin" {
+			var adminCount int
+			err := s.sqlDB.QueryRow("SELECT COUNT(*) FROM users WHERE role = 'admin' AND user_id != $1", userID).Scan(&adminCount)
+			if err != nil {
+				s.logger.Error("Failed to count admins", zap.Error(err))
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error":   "database_error",
+					"message": "Failed to validate admin count",
+				})
+				return
+			}
+
+			if adminCount == 0 {
+				c.JSON(http.StatusForbidden, gin.H{
+					"error":   "forbidden",
+					"message": "Cannot demote the last admin user",
+				})
+				return
+			}
+		}
+
+		// Log role change attempt
+		s.logger.Info("Role change attempted",
+			zap.String("admin_user_id", currentUser.UserID),
+			zap.String("target_user_id", userID),
+			zap.String("old_role", currentUserRole),
+			zap.String("new_role", req.Role),
+		)
 	}
 
 	// Start transaction
@@ -391,11 +452,20 @@ func (s *Service) UpdateUser(c *gin.Context, userID string) {
 			return
 		}
 
-		// TODO(nick): add safeguards here so that people can't manually update their role to admin. 
+		// Security safeguards implemented above - only admins can change roles
+		// and users cannot change their own role or demote the last admin
 		claims := map[string]interface{}{
 			"role":   req.Role,
 			"org_id": currentUser.OrgID,
 		}
+		
+		// Log successful role change
+		s.logger.Info("Role change successful",
+			zap.String("admin_user_id", currentUser.UserID),
+			zap.String("target_user_id", userID),
+			zap.String("new_role", req.Role),
+			zap.String("firebase_uid", firebaseUID),
+		)
 		if err := s.firebaseService.SetCustomClaims(firebaseUID, claims); err != nil {
 			s.logger.Error("Failed to update custom claims", zap.Error(err))
 			c.JSON(http.StatusInternalServerError, gin.H{
