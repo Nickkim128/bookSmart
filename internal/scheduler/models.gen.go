@@ -74,7 +74,6 @@ type BatchAvailabilityRequest struct {
 
 // Class defines model for Class.
 type Class struct {
-	ClassId  string  `json:"class_id"`
 	CourseId *string `json:"course_id,omitempty"`
 
 	// Duration Duration in minutes
