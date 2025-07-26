@@ -7,7 +7,16 @@ servers:
   - url: http://localhost:8000
     description: Local development server
 
+security:
+  - FirebaseAuth: []
+
 components:
+  securitySchemes:
+    FirebaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Firebase ID token obtained from Firebase Authentication
   schemas:
     Organization:
       type: object

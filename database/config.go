@@ -134,6 +134,8 @@ func Migrate(db *sql.DB, migrationsDir string) error {
 	}{
 		{"001", "001_create_tables.sql"},
 		{"002", "002_create_indexes.sql"},
+		{"003", "003_sample_data.sql"},
+		{"004", "004_add_firebase_auth.sql"},
 	}
 
 	for _, migration := range migrations {

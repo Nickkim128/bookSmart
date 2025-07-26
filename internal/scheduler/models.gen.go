@@ -9,6 +9,10 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+const (
+	FirebaseAuthScopes = "FirebaseAuth.Scopes"
+)
+
 // Defines values for CourseInterval.
 const (
 	CourseIntervalBiWeekly CourseInterval = "bi-weekly"

@@ -1,0 +1,348 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Firebase Test Token Generator</title>
+    <script type="module">
+      // Import Firebase
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+      // TODO: Replace with your Firebase config from Firebase Console
+      const firebaseConfig = {
+        apiKey: "AIzaSyC3hESars-9UhHwB98TYqLOQMS5RJsjehc",
+        authDomain: "booksmart-4aa93.firebaseapp.com",
+        projectId: "booksmart-4aa93",
+        storageBucket: "booksmart-4aa93.firebasestorage.app",
+        messagingSenderId: "975787435223",
+        appId: "1:975787435223:web:8e505f4cf7beb700f2fc92",
+        measurementId: "G-CMPBJEKWWM",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      // Make functions global
+      window.loginUser = async function () {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        if (!email || !password) {
+          document.getElementById("result").innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>Please enter both email and password</p>
+                `;
+          return;
+        }
+
+        try {
+          document.getElementById("result").innerHTML =
+            "<h3>🔄 Logging in...</h3>";
+
+          const userCredential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password,
+          );
+          const token = await userCredential.user.getIdToken();
+
+          document.getElementById("result").innerHTML = `
+                    <h3>✅ Login Successful!</h3>
+                    <p><strong>Firebase UID:</strong> <code>${userCredential.user.uid}</code></p>
+                    <p><strong>Email:</strong> ${userCredential.user.email}</p>
+                    <p><strong>Email Verified:</strong> ${userCredential.user.emailVerified}</p>
+                    
+                    <h4>🔑 Firebase ID Token (copy this for API testing):</h4>
+                    <textarea id="tokenArea" rows="8" cols="80" readonly style="font-family: monospace; font-size: 12px; word-break: break-all;">${token}</textarea>
+                    <br><br>
+                    <button onclick="copyToken()" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; cursor: pointer;">
+                        Copy Token
+                    </button>
+                    
+                    <h4>🧪 Test Commands:</h4>
+                    <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin: 10px 0;">
+                        <strong>Test unauthenticated (should fail):</strong>
+                        <pre style="background: #eee; padding: 8px; margin: 5px 0; overflow-x: auto;">curl http://localhost:8000/v1/user</pre>
+                        
+                        <strong>Test authenticated (should work):</strong>
+                        <pre style="background: #eee; padding: 8px; margin: 5px 0; overflow-x: auto;">curl -H "Authorization: Bearer ${token.substring(0, 50)}..." http://localhost:8000/v1/user</pre>
+                        
+                        <strong>Create user record:</strong>
+                        <pre style="background: #eee; padding: 8px; margin: 5px 0; overflow-x: auto;">curl -X POST -H "Authorization: Bearer [TOKEN]" -H "Content-Type: application/json" -d '{"org_id":"test-org","role":"student","first_name":"Test","last_name":"User","email":"${email}"}' http://localhost:8000/v1/user/${userCredential.user.uid}</pre>
+                    </div>
+                `;
+        } catch (error) {
+          document.getElementById("result").innerHTML = `
+                    <h3>❌ Login Failed</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>Code:</strong> ${error.code}</p>
+                `;
+        }
+      };
+
+      window.registerUser = async function () {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        if (!email || !password) {
+          document.getElementById("result").innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>Please enter both email and password</p>
+                `;
+          return;
+        }
+
+        if (password.length < 6) {
+          document.getElementById("result").innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>Password must be at least 6 characters long</p>
+                `;
+          return;
+        }
+
+        try {
+          document.getElementById("result").innerHTML =
+            "<h3>🔄 Creating account...</h3>";
+
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password,
+          );
+          const token = await userCredential.user.getIdToken();
+
+          document.getElementById("result").innerHTML = `
+                    <h3>✅ Registration Successful!</h3>
+                    <p><strong>Firebase UID:</strong> <code>${userCredential.user.uid}</code></p>
+                    <p><strong>Email:</strong> ${userCredential.user.email}</p>
+                    <p><strong>Email Verified:</strong> ${userCredential.user.emailVerified}</p>
+                    
+                    <h4>🔑 Firebase ID Token (copy this for API testing):</h4>
+                    <textarea id="tokenArea" rows="8" cols="80" readonly style="font-family: monospace; font-size: 12px; word-break: break-all;">${token}</textarea>
+                    <br><br>
+                    <button onclick="copyToken()" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; cursor: pointer;">
+                        Copy Token
+                    </button>
+                    
+                    <h4>🧪 Test Commands:</h4>
+                    <div style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin: 10px 0;">
+                        <strong>Test authenticated request:</strong>
+                        <pre style="background: #eee; padding: 8px; margin: 5px 0; overflow-x: auto;">curl -H "Authorization: Bearer ${token.substring(0, 50)}..." http://localhost:8000/v1/user</pre>
+                        
+                        <strong>Create user record in your database:</strong>
+                        <pre style="background: #eee; padding: 8px; margin: 5px 0; overflow-x: auto;">curl -X POST -H "Authorization: Bearer [TOKEN]" -H "Content-Type: application/json" -d '{"org_id":"test-org","role":"student","first_name":"Test","last_name":"User","email":"${email}"}' http://localhost:8000/v1/user/${userCredential.user.uid}</pre>
+                    </div>
+                `;
+        } catch (error) {
+          document.getElementById("result").innerHTML = `
+                    <h3>❌ Registration Failed</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>Code:</strong> ${error.code}</p>
+                `;
+        }
+      };
+
+      window.copyToken = function () {
+        const tokenArea = document.getElementById("tokenArea");
+        tokenArea.select();
+        tokenArea.setSelectionRange(0, 99999); // For mobile devices
+        navigator.clipboard.writeText(tokenArea.value);
+
+        // Visual feedback
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = "Copied!";
+        button.style.background = "#45a049";
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.background = "#4CAF50";
+        }, 2000);
+      };
+    </script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .warning {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        padding: 15px;
+        border-radius: 4px;
+        margin: 20px 0;
+      }
+
+      .form-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+      }
+
+      input,
+      button {
+        margin: 10px 5px;
+        padding: 12px;
+        font-size: 14px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+
+      input[type="email"],
+      input[type="password"] {
+        width: 300px;
+      }
+
+      button {
+        cursor: pointer;
+        color: white;
+        border: none;
+        font-weight: bold;
+      }
+
+      .btn-register {
+        background: #4caf50;
+      }
+
+      .btn-login {
+        background: #2196f3;
+      }
+
+      .btn-register:hover {
+        background: #45a049;
+      }
+
+      .btn-login:hover {
+        background: #1976d2;
+      }
+
+      textarea {
+        font-family: monospace;
+        font-size: 11px;
+        resize: vertical;
+      }
+
+      pre {
+        background: #f0f0f0;
+        padding: 10px;
+        overflow-x: auto;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+
+      code {
+        background: #f0f0f0;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+
+      .instructions {
+        background: #e7f3ff;
+        padding: 15px;
+        border-radius: 4px;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>🔥 Firebase Test Token Generator</h1>
+      <p>
+        Generate Firebase ID tokens for testing your authenticated API endpoints
+      </p>
+    </div>
+
+    <div class="warning">
+      <strong>⚠️ Setup Required:</strong><br />
+      1. Update the <code>firebaseConfig</code> object in the script with your
+      Firebase project config<br />
+      2. Get your config from Firebase Console → Project Settings → General →
+      Your apps → Web app config<br />
+      3. Make sure Email/Password authentication is enabled in Firebase Console
+      → Authentication → Sign-in method
+    </div>
+
+    <div class="form-section">
+      <h2>Generate Firebase ID Token</h2>
+
+      <div>
+        <label for="email"><strong>Email:</strong></label
+        ><br />
+        <input type="email" id="email" placeholder="test@example.com" />
+      </div>
+
+      <div>
+        <label for="password"><strong>Password:</strong></label
+        ><br />
+        <input
+          type="password"
+          id="password"
+          placeholder="minimum 6 characters"
+        />
+      </div>
+
+      <div>
+        <button onclick="registerUser()" class="btn-register">
+          🆕 Register New User
+        </button>
+        <button onclick="loginUser()" class="btn-login">
+          🔐 Login Existing User
+        </button>
+      </div>
+    </div>
+
+    <div id="result"></div>
+
+    <div class="instructions">
+      <h3>📋 How to Use:</h3>
+      <ol>
+        <li>
+          <strong>Configure Firebase:</strong> Update the
+          <code>firebaseConfig</code> object at the top of this HTML file
+        </li>
+        <li>
+          <strong>Start Your Server:</strong> Make sure your Go server is
+          running on <code>http://localhost:8000</code>
+        </li>
+        <li>
+          <strong>Register/Login:</strong> Enter email and password, then click
+          Register (first time) or Login
+        </li>
+        <li>
+          <strong>Copy Token:</strong> Copy the generated Firebase ID token
+        </li>
+        <li><strong>Test API:</strong> Use the token in your API calls</li>
+      </ol>
+
+      <h3>🚀 Next Steps After Getting Token:</h3>
+      <p>1. Test that authentication is working</p>
+      <p>
+        2. Create a user record in your database to link Firebase UID with your
+        app data
+      </p>
+      <p>3. Test role-based access control</p>
+    </div>
+
+    <div class="warning">
+      <strong>🔒 Security Note:</strong><br />
+      This is for development testing only. In production, your frontend app
+      would handle Firebase authentication and send tokens to your API
+      automatically.
+    </div>
+  </body>
+</html>
