@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"strings"
 
 	"scheduler-api/internal/auth"
 	"scheduler-api/internal/scheduler"
@@ -64,6 +65,31 @@ func main() {
 	}
 
 	r := gin.Default()
+
+	// Add CORS middleware for frontend integration - MUST be before route registration
+	allowedOrigins := strings.Split(os.Getenv("CORS_ALLOWED_ORIGINS"), ",")
+	r.Use(func(c *gin.Context) {
+		origin := c.Request.Header.Get("Origin")
+		
+		// Check if the origin is in the allowed list
+		for _, allowedOrigin := range allowedOrigins {
+			if strings.TrimSpace(allowedOrigin) == origin {
+				c.Header("Access-Control-Allow-Origin", origin)
+				break
+			}
+		}
+		
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization")
+		c.Header("Access-Control-Allow-Credentials", "true")
+		
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		
+		c.Next()
+	})
 
 	logger, err := zap.NewProduction()
 	if err != nil {
@@ -132,20 +158,6 @@ func main() {
 			c.JSON(200, gin.H{"message": "Admin users endpoint"})
 		})
 	}
-
-	// Add CORS middleware for frontend integration
-	r.Use(func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-		c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization")
-		
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
-		
-		c.Next()
-	})
 
 	logger.Info("Starting server on :8000")
 	logger.Info("Firebase authentication enabled")

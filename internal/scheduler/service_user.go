@@ -178,14 +178,14 @@ func (s *Service) GetUser(c *gin.Context, userID string) {
 		return
 	}
 
-	// Query user from database
+	// Query user from database by Firebase UID
 	query := `
 		SELECT user_id, org_id, role, first_name, last_name, email, 
 		       COALESCE(email_verified, false) as email_verified,
 		       COALESCE(status, 'active') as status,
 		       created_at, updated_at, last_login_at
 		FROM users 
-		WHERE user_id = $1
+		WHERE firebase_uid = $1 AND status = 'active'
 	`
 
 	var user struct {
@@ -362,8 +362,8 @@ func (s *Service) UpdateUser(c *gin.Context, userID string) {
 		return
 	}
 
-	// Update database
-	query := fmt.Sprintf("UPDATE users SET %s WHERE user_id = $%d", 
+	// Update database using Firebase UID
+	query := fmt.Sprintf("UPDATE users SET %s WHERE firebase_uid = $%d", 
 		strings.Join(setParts, ", "), argIndex)
 	args = append(args, userID)
 
@@ -379,17 +379,8 @@ func (s *Service) UpdateUser(c *gin.Context, userID string) {
 
 	// Update Firebase custom claims if role changed
 	if req.Role != "" {
-		// Get Firebase UID
-		var firebaseUID string
-		err = s.sqlDB.QueryRow("SELECT firebase_uid FROM users WHERE user_id = $1", userID).Scan(&firebaseUID)
-		if err != nil {
-			s.logger.Error("Failed to get Firebase UID", zap.Error(err))
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error":   "database_error",
-				"message": "Failed to get user Firebase ID",
-			})
-			return
-		}
+		// Use the provided userID as Firebase UID (since route param is Firebase UID)
+		firebaseUID := userID
 
 		// TODO(nick): add safeguards here so that people can't manually update their role to admin. 
 		claims := map[string]interface{}{
