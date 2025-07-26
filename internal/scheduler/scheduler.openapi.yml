@@ -193,14 +193,11 @@ components:
     Class:
       type: object
       required:
-        - class_id
         - start_time
         - duration
         - students
         - teachers
       properties:
-        class_id:
-          type: string
         course_id:
           type: string
         start_time:

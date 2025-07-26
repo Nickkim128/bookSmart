@@ -64,3 +64,4 @@ build/
 
 # Node modules and cache
 node_modules/
+firebase-service-account.json
