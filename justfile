@@ -10,6 +10,10 @@ lint:
     pre-commit run --all-files
     rm -rf node_modules
 
+# Run all tests with verbose output
+test:
+    go test ./... -v
+
 # Run the application with environment variables loaded
 run:
     export $(grep -v '^#' .env.local | xargs) && go run main.go

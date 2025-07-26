@@ -67,14 +67,15 @@ func main() {
 
 	logger, err := zap.NewProduction()
 	if err != nil {
-		log.Fatal("Failed to create logger:", err)
+		log.Fatal("Failed to initialize logger:", err)
 	}
 
-	// Initialize PostgreSQL connection pool (for existing code)
+	// Initialize PGX pool connection
 	pgxPool, err := initPostgres(logger)
 	if err != nil {
 		logger.Fatal("Failed to initialize Postgres:", zap.Error(err))
 	}
+	defer pgxPool.Close()
 
 	// Initialize SQL database connection (for auth service)
 	sqlDB, err := initSQLDatabase(logger)
@@ -114,6 +115,10 @@ func main() {
 	scheduler.RegisterHandlersWithOptions(r, scheduler.NewService(logger, pgxPool, sqlDB, firebaseService), scheduler.GinServerOptions{
 		Middlewares: authMiddlewares,
 	})
+
+
+	// Register Swagger documentation endpoints
+	scheduler.RegisterSwaggerHandlers(r)
 
 	// Add some public routes (if any) - these would be registered separately
 	// For now, all routes require authentication

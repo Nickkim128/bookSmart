@@ -77,6 +77,35 @@ The API provides endpoints for:
 - **Classes** - Schedule individual class sessions
 - **Trackers** - Monitor course progress and completion
 
+## API Documentation
+
+The API includes automatically generated interactive documentation using Swagger/OpenAPI.
+
+### Accessing the Documentation
+
+Once the server is running, you can access the API documentation at:
+
+- **Swagger UI**: <http://localhost:8000/docs>
+- **Raw OpenAPI Spec**: <http://localhost:8000/docs/swagger.json>
+
+### Features
+
+- **Interactive Documentation**: The Swagger UI provides an interactive interface to explore and test all API endpoints
+- **Request/Response Examples**: See example requests and responses for each endpoint
+- **Try It Out**: Test API endpoints directly from the browser
+- **Schema Definitions**: View detailed schema definitions for all data models
+
+### API Endpoints
+
+The API includes the following main endpoint groups:
+
+- **Users** (`/v1/user/*`) - User management operations
+- **Courses** (`/v1/course/*`) - Course management operations
+- **Classes** (`/v1/class/*`) - Class scheduling operations
+- **Organizations** (`/v1/org/*`) - Organization management
+- **Availability** (`/v1/availability`, `/v1/user/*/availability`) - User availability management
+- **Trackers** (`/v1/trackers/*`) - Course tracking operations
+
 ## Development
 
 ### Regenerating Code
@@ -87,12 +116,7 @@ After modifying the OpenAPI spec (`scheduler.openapi.yml`), regenerate the Go co
 go generate ./...
 ```
 
-### API Documentation
-
-The OpenAPI specification is located at `internal/scheduler/scheduler.openapi.yml`. You can view it in:
-
-- [Swagger Editor](https://editor.swagger.io/) (paste the YAML content)
-- Any OpenAPI-compatible tool
+The OpenAPI specification is defined in `internal/scheduler/scheduler.openapi.yml` and is automatically generated into Go code using `oapi-codegen`.
 
 ## Running the Server
 
@@ -104,7 +128,7 @@ just run
 
 This will load environment variables from `.env.local` and start the server on port 8000.
 
-API documentation will be available at: <http://localhost:8000/swagger/>
+API documentation will be available at: <http://localhost:8000/docs>
 
 ## Code Quality & Linting
 

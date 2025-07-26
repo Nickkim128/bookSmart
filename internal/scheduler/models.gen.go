@@ -37,16 +37,16 @@ const (
 
 // Defines values for UserRole.
 const (
-	UserRoleAdmin   UserRole = "Admin"
-	UserRoleStudent UserRole = "Student"
-	UserRoleTutor   UserRole = "Tutor"
+	UserRoleAdmin   UserRole = "admin"
+	UserRoleStudent UserRole = "student"
+	UserRoleTutor   UserRole = "tutor"
 )
 
 // Defines values for UserUpdateRole.
 const (
-	UserUpdateRoleAdmin   UserUpdateRole = "Admin"
-	UserUpdateRoleStudent UserUpdateRole = "Student"
-	UserUpdateRoleTutor   UserUpdateRole = "Tutor"
+	UserUpdateRoleAdmin   UserUpdateRole = "admin"
+	UserUpdateRoleStudent UserUpdateRole = "student"
+	UserUpdateRoleTutor   UserUpdateRole = "tutor"
 )
 
 // Availability defines model for Availability.
@@ -78,10 +78,10 @@ type Class struct {
 	CourseId *string `json:"course_id,omitempty"`
 
 	// Duration Duration in minutes
-	Duration int       `json:"duration"`
-	Start    time.Time `json:"start"`
-	Students []string  `json:"students"`
-	Teachers []string  `json:"teachers"`
+	Duration  int       `json:"duration"`
+	StartTime time.Time `json:"start_time"`
+	Students  []string  `json:"students"`
+	Teachers  []string  `json:"teachers"`
 }
 
 // Course defines model for Course.
@@ -99,11 +99,6 @@ type Course struct {
 
 // CourseInterval defines model for Course.Interval.
 type CourseInterval string
-
-// CourseClassesRequest defines model for CourseClassesRequest.
-type CourseClassesRequest struct {
-	CourseId string `json:"course_id"`
-}
 
 // CourseParticipantChanges defines model for CourseParticipantChanges.
 type CourseParticipantChanges struct {
@@ -172,11 +167,6 @@ type User struct {
 // UserRole defines model for User.Role.
 type UserRole string
 
-// UserClassesRequest defines model for UserClassesRequest.
-type UserClassesRequest struct {
-	UserId string `json:"user_id"`
-}
-
 // UserUpdate defines model for UserUpdate.
 type UserUpdate struct {
 	Email       *openapi_types.Email `json:"email,omitempty"`
@@ -194,12 +184,6 @@ type GetBatchAvailabilityJSONRequestBody = BatchAvailabilityRequest
 
 // CreateClassJSONRequestBody defines body for CreateClass for application/json ContentType.
 type CreateClassJSONRequestBody = Class
-
-// ListCourseClassesJSONRequestBody defines body for ListCourseClasses for application/json ContentType.
-type ListCourseClassesJSONRequestBody = CourseClassesRequest
-
-// ListUserClassesJSONRequestBody defines body for ListUserClasses for application/json ContentType.
-type ListUserClassesJSONRequestBody = UserClassesRequest
 
 // CreateCourseJSONRequestBody defines body for CreateCourse for application/json ContentType.
 type CreateCourseJSONRequestBody = Course

@@ -6,8 +6,13 @@ import (
 	"scheduler-api/internal/auth"
 	"strings"
 
+	"context"
+	_ "embed"
+
+	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type UserService interface {
@@ -231,20 +236,24 @@ func (s *Service) GetUser(c *gin.Context, userID string) {
 }
 
 func (s *Service) ListUsers(c *gin.Context) {
-	// Only admins can list all users
-	if !auth.IsAdmin(c) {
-		c.JSON(http.StatusForbidden, gin.H{
-			"error":   "forbidden",
-			"message": "Admin access required",
-		})
+	organizationID := "00000000-0000-0000-0000-000000000001"
+	users, err := listUsers(c.Request.Context(), s.pgxPool, organizationID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// TODO: Implement user listing with pagination
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"error":   "not_implemented",
-		"message": "User listing not yet implemented",
-	})
+	for i := range users {
+		courses, err := getUserCourses(c.Request.Context(), s.pgxPool, users[i].UserId)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		users[i].Courses = &courses
+	}
+
+	c.JSON(http.StatusOK, users)
 }
 
 func (s *Service) UpdateUser(c *gin.Context, userID string) {
@@ -426,4 +435,20 @@ func (s *Service) DeleteUser(c *gin.Context, userID string) {
 		"error":   "not_implemented",
 		"message": "User deletion not yet implemented",
 	})
+}
+
+//go:embed queries/user/list_users.sql
+var queryListUsersSQL string
+
+//go:embed queries/user/get_user_courses.sql
+var queryGetUserCoursesSQL string
+
+func listUsers(ctx context.Context, pgxPool *pgxpool.Pool, organizationID string) ([]User, error) {
+	users := []User{}
+	return users, pgxscan.Select(ctx, pgxPool, &users, queryListUsersSQL, organizationID)
+}
+
+func getUserCourses(ctx context.Context, pgxPool *pgxpool.Pool, userID string) ([]string, error) {
+	courses := []string{}
+	return courses, pgxscan.Select(ctx, pgxPool, &courses, queryGetUserCoursesSQL, userID)
 }

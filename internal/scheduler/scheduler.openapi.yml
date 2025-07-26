@@ -50,7 +50,7 @@ components:
           type: string
         role:
           type: string
-          enum: [Admin, Student, Tutor]
+          enum: [admin, student, tutor]
         email:
           type: string
           format: email
@@ -70,7 +70,7 @@ components:
           type: string
         role:
           type: string
-          enum: [Admin, Student, Tutor]
+          enum: [admin, student, tutor]
         email:
           type: string
           format: email
@@ -194,7 +194,7 @@ components:
       type: object
       required:
         - class_id
-        - start
+        - start_time
         - duration
         - students
         - teachers
@@ -203,7 +203,7 @@ components:
           type: string
         course_id:
           type: string
-        start:
+        start_time:
           type: string
           format: date-time
         duration:
@@ -227,22 +227,6 @@ components:
           type: array
           items:
             type: string
-
-    UserClassesRequest:
-      type: object
-      required:
-        - user_id
-      properties:
-        user_id:
-          type: string
-
-    CourseClassesRequest:
-      type: object
-      required:
-        - course_id
-      properties:
-        course_id:
-          type: string
 
     CourseTrackersRequest:
       type: object
@@ -291,7 +275,7 @@ components:
           enum: [fulfilled, scheduled, unscheduled, skipped]
 
 paths:
-  /v1/org/{org_id}:
+  /v1/org/{org_id}/:
     post:
       tags: [Organization]
       summary: Create a new organization
@@ -330,7 +314,7 @@ paths:
         "404":
           description: Organization not found
 
-  /v1/user/{user_id}:
+  /v1/user/{user_id}/:
     post:
       summary: Create a new user
       operationId: createUser
@@ -411,7 +395,7 @@ paths:
         "404":
           description: User not found
 
-  /v1/user:
+  /v1/user/:
     get:
       summary: Get all users
       operationId: listUsers
@@ -426,7 +410,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/User"
 
-  /v1/user/{user_id}/availability:
+  /v1/user/{user_id}/availability/:
     post:
       summary: Create availability for a user
       operationId: createAvailability
@@ -491,8 +475,8 @@ paths:
         "404":
           description: User not found
 
-  /v1/availability:
-    get:
+  /v1/availability/:
+    post:
       summary: Get availability for multiple users (batch)
       operationId: getBatchAvailability
       tags: [Availability]
@@ -510,9 +494,16 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Availability"
+                  type: object
+                  properties:
+                    user_id:
+                      type: string
+                    available_time_intervals:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/TimeInterval"
 
-  /v1/course:
+  /v1/course/:
     post:
       summary: Create a new course
       operationId: createCourse
@@ -543,7 +534,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Course"
 
-  /v1/course/{course_id}:
+  /v1/course/{course_id}/:
     post:
       summary: Update a course
       operationId: updateCourse
@@ -586,7 +577,7 @@ paths:
         "404":
           description: Course not found
 
-  /v1/class:
+  /v1/class/:
     post:
       summary: Create a new class
       operationId: createClass
@@ -603,17 +594,17 @@ paths:
         "400":
           description: Bad request
 
-  /v1/class/user:
+  /v1/class/user/{user_id}/:
     get:
       summary: List classes for a user
       operationId: listUserClasses
       tags: [Class]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserClassesRequest"
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: User classes
@@ -624,17 +615,17 @@ paths:
                 items:
                   $ref: "#/components/schemas/Class"
 
-  /v1/class/course:
+  /v1/class/course/{course_id}/:
     get:
       summary: List classes for a course
       operationId: listCourseClasses
       tags: [Class]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CourseClassesRequest"
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Course classes
@@ -645,7 +636,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Class"
 
-  /v1/trackers/course:
+  /v1/trackers/course/:
     get:
       summary: Get trackers for a course
       operationId: getTrackers

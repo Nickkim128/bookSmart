@@ -21,61 +21,61 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Get availability for multiple users (batch)
-	// (GET /v1/availability)
+	// (POST /v1/availability/)
 	GetBatchAvailability(c *gin.Context)
 	// Create a new class
-	// (POST /v1/class)
+	// (POST /v1/class/)
 	CreateClass(c *gin.Context)
 	// List classes for a course
-	// (GET /v1/class/course)
-	ListCourseClasses(c *gin.Context)
+	// (GET /v1/class/course/{course_id}/)
+	ListCourseClasses(c *gin.Context, courseId string)
 	// List classes for a user
-	// (GET /v1/class/user)
-	ListUserClasses(c *gin.Context)
+	// (GET /v1/class/user/{user_id}/)
+	ListUserClasses(c *gin.Context, userId string)
 	// Get all courses
-	// (GET /v1/course)
+	// (GET /v1/course/)
 	ListCourses(c *gin.Context)
 	// Create a new course
-	// (POST /v1/course)
+	// (POST /v1/course/)
 	CreateCourse(c *gin.Context)
 	// Get a course by ID
-	// (GET /v1/course/{course_id})
+	// (GET /v1/course/{course_id}/)
 	GetCourse(c *gin.Context, courseId string)
 	// Update a course
-	// (POST /v1/course/{course_id})
+	// (POST /v1/course/{course_id}/)
 	UpdateCourse(c *gin.Context, courseId string)
 	// Delete an organization
-	// (DELETE /v1/org/{org_id})
+	// (DELETE /v1/org/{org_id}/)
 	DeleteOrg(c *gin.Context, orgId string)
 	// Create a new organization
-	// (POST /v1/org/{org_id})
+	// (POST /v1/org/{org_id}/)
 	CreateOrg(c *gin.Context, orgId string)
 	// Get trackers for a course
-	// (GET /v1/trackers/course)
+	// (GET /v1/trackers/course/)
 	GetTrackers(c *gin.Context)
 	// Get all users
-	// (GET /v1/user)
+	// (GET /v1/user/)
 	ListUsers(c *gin.Context)
 	// Delete a user
-	// (DELETE /v1/user/{user_id})
+	// (DELETE /v1/user/{user_id}/)
 	DeleteUser(c *gin.Context, userId string)
 	// Get a user by ID
-	// (GET /v1/user/{user_id})
+	// (GET /v1/user/{user_id}/)
 	GetUser(c *gin.Context, userId string)
 	// Update a user
-	// (PATCH /v1/user/{user_id})
+	// (PATCH /v1/user/{user_id}/)
 	UpdateUser(c *gin.Context, userId string)
 	// Create a new user
-	// (POST /v1/user/{user_id})
+	// (POST /v1/user/{user_id}/)
 	CreateUser(c *gin.Context, userId string)
 	// Get availability for a user
-	// (GET /v1/user/{user_id}/availability)
+	// (GET /v1/user/{user_id}/availability/)
 	GetAvailability(c *gin.Context, userId string)
 	// Update availability for a user
-	// (PATCH /v1/user/{user_id}/availability)
+	// (PATCH /v1/user/{user_id}/availability/)
 	UpdateAvailability(c *gin.Context, userId string)
 	// Create availability for a user
-	// (POST /v1/user/{user_id}/availability)
+	// (POST /v1/user/{user_id}/availability/)
 	CreateAvailability(c *gin.Context, userId string)
 }
 
@@ -121,6 +121,17 @@ func (siw *ServerInterfaceWrapper) CreateClass(c *gin.Context) {
 // ListCourseClasses operation middleware
 func (siw *ServerInterfaceWrapper) ListCourseClasses(c *gin.Context) {
 
+	var err error
+
+	// ------------- Path parameter "course_id" -------------
+	var courseId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "course_id", c.Param("course_id"), &courseId, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter course_id: %w", err), http.StatusBadRequest)
+		return
+	}
+
 	c.Set(FirebaseAuthScopes, []string{})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -130,7 +141,7 @@ func (siw *ServerInterfaceWrapper) ListCourseClasses(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.ListCourseClasses(c)
+	siw.Handler.ListCourseClasses(c, courseId)
 }
 
 // ListUserClasses operation middleware
@@ -138,6 +149,17 @@ func (siw *ServerInterfaceWrapper) ListUserClasses(c *gin.Context) {
 
 	c.Set(FirebaseAuthScopes, []string{})
 
+	var err error
+
+	// ------------- Path parameter "user_id" -------------
+	var userId string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "user_id", c.Param("user_id"), &userId, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter user_id: %w", err), http.StatusBadRequest)
+		return
+	}
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 		if c.IsAborted() {
@@ -145,7 +167,7 @@ func (siw *ServerInterfaceWrapper) ListUserClasses(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.ListUserClasses(c)
+	siw.Handler.ListUserClasses(c, userId)
 }
 
 // ListCourses operation middleware
@@ -521,25 +543,25 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 		ErrorHandler:       errorHandler,
 	}
 
-	router.GET(options.BaseURL+"/v1/availability", wrapper.GetBatchAvailability)
-	router.POST(options.BaseURL+"/v1/class", wrapper.CreateClass)
-	router.GET(options.BaseURL+"/v1/class/course", wrapper.ListCourseClasses)
-	router.GET(options.BaseURL+"/v1/class/user", wrapper.ListUserClasses)
-	router.GET(options.BaseURL+"/v1/course", wrapper.ListCourses)
-	router.POST(options.BaseURL+"/v1/course", wrapper.CreateCourse)
-	router.GET(options.BaseURL+"/v1/course/:course_id", wrapper.GetCourse)
-	router.POST(options.BaseURL+"/v1/course/:course_id", wrapper.UpdateCourse)
-	router.DELETE(options.BaseURL+"/v1/org/:org_id", wrapper.DeleteOrg)
-	router.POST(options.BaseURL+"/v1/org/:org_id", wrapper.CreateOrg)
-	router.GET(options.BaseURL+"/v1/trackers/course", wrapper.GetTrackers)
-	router.GET(options.BaseURL+"/v1/user", wrapper.ListUsers)
-	router.DELETE(options.BaseURL+"/v1/user/:user_id", wrapper.DeleteUser)
-	router.GET(options.BaseURL+"/v1/user/:user_id", wrapper.GetUser)
-	router.PATCH(options.BaseURL+"/v1/user/:user_id", wrapper.UpdateUser)
-	router.POST(options.BaseURL+"/v1/user/:user_id", wrapper.CreateUser)
-	router.GET(options.BaseURL+"/v1/user/:user_id/availability", wrapper.GetAvailability)
-	router.PATCH(options.BaseURL+"/v1/user/:user_id/availability", wrapper.UpdateAvailability)
-	router.POST(options.BaseURL+"/v1/user/:user_id/availability", wrapper.CreateAvailability)
+	router.POST(options.BaseURL+"/v1/availability/", wrapper.GetBatchAvailability)
+	router.POST(options.BaseURL+"/v1/class/", wrapper.CreateClass)
+	router.GET(options.BaseURL+"/v1/class/course/:course_id/", wrapper.ListCourseClasses)
+	router.GET(options.BaseURL+"/v1/class/user/:user_id/", wrapper.ListUserClasses)
+	router.GET(options.BaseURL+"/v1/course/", wrapper.ListCourses)
+	router.POST(options.BaseURL+"/v1/course/", wrapper.CreateCourse)
+	router.GET(options.BaseURL+"/v1/course/:course_id/", wrapper.GetCourse)
+	router.POST(options.BaseURL+"/v1/course/:course_id/", wrapper.UpdateCourse)
+	router.DELETE(options.BaseURL+"/v1/org/:org_id/", wrapper.DeleteOrg)
+	router.POST(options.BaseURL+"/v1/org/:org_id/", wrapper.CreateOrg)
+	router.GET(options.BaseURL+"/v1/trackers/course/", wrapper.GetTrackers)
+	router.GET(options.BaseURL+"/v1/user/", wrapper.ListUsers)
+	router.DELETE(options.BaseURL+"/v1/user/:user_id/", wrapper.DeleteUser)
+	router.GET(options.BaseURL+"/v1/user/:user_id/", wrapper.GetUser)
+	router.PATCH(options.BaseURL+"/v1/user/:user_id/", wrapper.UpdateUser)
+	router.POST(options.BaseURL+"/v1/user/:user_id/", wrapper.CreateUser)
+	router.GET(options.BaseURL+"/v1/user/:user_id/availability/", wrapper.GetAvailability)
+	router.PATCH(options.BaseURL+"/v1/user/:user_id/availability/", wrapper.UpdateAvailability)
+	router.POST(options.BaseURL+"/v1/user/:user_id/availability/", wrapper.CreateAvailability)
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
