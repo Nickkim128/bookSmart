@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 
 # Function to print colored output
 print_status() {
-    if [ $1 -eq 0 ]; then
+    if [ "$1" -eq 0 ]; then
         echo -e "${GREEN}✅ $2${NC}"
     else
         echo -e "${RED}❌ $2${NC}"
@@ -152,7 +152,7 @@ echo "4. Replace FAKE_TOKEN with real token in this script"
 echo ""
 echo "Example valid token test:"
 echo 'REAL_TOKEN="your-firebase-id-token-here"'
-echo 'curl -H "Authorization: Bearer $REAL_TOKEN" http://localhost:8000/v1/user'
+echo "curl -H \"Authorization: Bearer \$REAL_TOKEN\" http://localhost:8000/v1/user"
 echo ""
 echo "🔥 Firebase Auth integration is properly protecting your API!"
 
