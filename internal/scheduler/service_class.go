@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"net/http"
+	"scheduler-api/internal/auth"
 	"time"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
@@ -22,6 +23,22 @@ type ClassService interface {
 var _ ClassService = (*Service)(nil)
 
 func (s *Service) CreateClass(c *gin.Context) {
+	currentUser, err := auth.GetCurrentUser(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error":   "unauthorized",
+			"message": "Authentication required",
+		})
+		return
+	}
+
+	if currentUser.Role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{
+			"error":   "forbidden",
+			"message": "Only admin can create classes",
+		})
+		return
+	}
 	createClassRequest := Class{}
 	if err := c.ShouldBindJSON(&createClassRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -29,20 +46,21 @@ func (s *Service) CreateClass(c *gin.Context) {
 	}
 
 	var (
+		// Hard coded org id here for now.
 		orgID   = "00000000-0000-0000-0000-000000000001"
 		classID = uuid.New().String()
 		now     = time.Now()
 	)
 
-	err := createClass(c.Request.Context(), s.pgxPool, createClassRequest, classID, orgID, now)
+	err = createClass(c.Request.Context(), s.pgxPool, createClassRequest, classID, orgID, now)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"Failed to create Class": err.Error()})
 		return
 	}
 
 	classParticipantsErr := createClassParticipants(c.Request.Context(), s.pgxPool, createClassRequest, classID, orgID, now)
 	if classParticipantsErr != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": classParticipantsErr.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"Failed to add class participants": classParticipantsErr.Error()})
 		return
 	}
 
@@ -52,7 +70,7 @@ func (s *Service) CreateClass(c *gin.Context) {
 func (s *Service) ListUserClasses(c *gin.Context, userID string) {
 	classes, err := listUserClasses(c.Request.Context(), s.pgxPool, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"Failed to list user classes": err.Error()})
 		return
 	}
 
